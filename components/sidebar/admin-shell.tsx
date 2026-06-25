@@ -48,13 +48,19 @@ export function AdminShell({ portalName, children }: Props) {
         )}
       >
         {/* Brand header */}
-        <div className="h-14 flex items-center shrink-0 border-b border-border px-3 gap-2">
-          <ShieldCheck className="h-4 w-4 shrink-0 text-muted-foreground" />
+        <div className={cn(
+          'h-14 flex items-center shrink-0 border-b border-border px-3',
+          collapsed ? 'justify-center gap-0' : 'gap-2'
+        )}>
+          <ShieldCheck className={cn(
+            'h-4 w-4 shrink-0 text-muted-foreground transition-all duration-300 overflow-hidden',
+            collapsed ? 'w-0 opacity-0' : 'w-4'
+          )} />
           <span
             className={cn(
-              'font-mono-brand text-xs font-bold tracking-[0.12em] uppercase text-foreground/70 truncate flex-1',
+              'font-mono-brand text-xs font-bold tracking-[0.12em] uppercase text-foreground/70 truncate',
               'transition-all duration-300 overflow-hidden',
-              collapsed && 'w-0 opacity-0 flex-none'
+              collapsed ? 'w-0 opacity-0 flex-none' : 'flex-1 opacity-100'
             )}
           >
             {portalName}
