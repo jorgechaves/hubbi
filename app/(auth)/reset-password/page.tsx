@@ -34,8 +34,8 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="w-full max-w-sm space-y-6 bg-white p-8 rounded-xl shadow-sm border">
+    <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="w-full max-w-sm space-y-6 bg-card p-8 rounded-xl border border-border">
         <div className="space-y-1 text-center">
           <h1 className="text-xl font-semibold">Nova senha</h1>
           <p className="text-sm text-muted-foreground">Defina sua nova senha de acesso</p>
@@ -52,7 +52,7 @@ export default function ResetPasswordPage() {
           </div>
 
           {error && (
-            <p className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-md">{error}</p>
+            <p className="text-sm text-destructive bg-destructive/10 px-3 py-2 rounded-md">{error}</p>
           )}
 
           <Button type="submit" className="w-full" disabled={isPending}>

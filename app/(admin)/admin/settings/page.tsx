@@ -30,13 +30,13 @@ export default function SettingsPage() {
     })
   }
 
-  if (!settings) return <div className="p-6 text-sm text-gray-500">Carregando...</div>
+  if (!settings) return <div className="p-6 text-sm text-muted-foreground">Carregando...</div>
 
   return (
     <div className="p-6 max-w-lg space-y-6">
       <h1 className="text-xl font-semibold">Configurações do portal</h1>
 
-      <form onSubmit={handleSubmit} className="bg-white rounded-lg border p-6 space-y-4">
+      <form onSubmit={handleSubmit} className="bg-card rounded-lg border border-border p-6 space-y-4">
         <div className="space-y-2">
           <Label htmlFor="name">Nome do portal</Label>
           <Input id="name" name="name" defaultValue={settings.name} required />
@@ -51,7 +51,7 @@ export default function SettingsPage() {
             defaultValue={settings.logo_url ?? ''}
             placeholder="https://empresa.com/logo.png"
           />
-          <p className="text-xs text-gray-400">Deixe em branco para exibir o nome em texto</p>
+          <p className="text-xs text-muted-foreground/60">Deixe em branco para exibir o nome em texto</p>
         </div>
 
         <div className="space-y-2">
@@ -64,7 +64,7 @@ export default function SettingsPage() {
               defaultValue={settings.primary_color}
               className="h-10 w-16 rounded border cursor-pointer"
             />
-            <span className="text-sm text-gray-500">Clique para escolher a cor</span>
+            <span className="text-sm text-muted-foreground">Clique para escolher a cor</span>
           </div>
         </div>
 

@@ -50,7 +50,7 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
     })
   }
 
-  if (!profile) return <div className="p-6 text-sm text-gray-500">Carregando...</div>
+  if (!profile) return <div className="p-6 text-sm text-muted-foreground">Carregando...</div>
 
   return (
     <div className="p-6 max-w-lg space-y-6">
@@ -61,10 +61,10 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
         <h1 className="text-xl font-semibold">Editar usuário</h1>
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-white rounded-lg border p-6 space-y-4">
+      <form onSubmit={handleSubmit} className="bg-card rounded-lg border border-border p-6 space-y-4">
         <div className="space-y-2">
           <Label>Email</Label>
-          <Input value={profile.email} disabled className="bg-gray-50" />
+          <Input value={profile.email} disabled className="bg-muted/50" />
         </div>
         <div className="space-y-2">
           <Label htmlFor="name">Nome</Label>
@@ -111,7 +111,7 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
           </div>
         </div>
 
-        {error && <p className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-md">{error}</p>}
+        {error && <p className="text-sm text-destructive bg-destructive/10 px-3 py-2 rounded-md">{error}</p>}
 
         <div className="flex gap-2 pt-2">
           <Button type="submit" disabled={isPending}>

@@ -52,7 +52,7 @@ export default function EditGroupPage() {
     })
   }
 
-  if (!group) return <div className="p-6 text-sm text-gray-500">Carregando...</div>
+  if (!group) return <div className="p-6 text-sm text-muted-foreground">Carregando...</div>
 
   return (
     <div className="p-6 max-w-lg space-y-6">
@@ -63,7 +63,7 @@ export default function EditGroupPage() {
         <h1 className="text-xl font-semibold">Editar grupo</h1>
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-white rounded-lg border p-6 space-y-4">
+      <form onSubmit={handleSubmit} className="bg-card rounded-lg border border-border p-6 space-y-4">
         <div className="space-y-2">
           <Label htmlFor="name">Nome</Label>
           <Input id="name" name="name" defaultValue={group.name} required />
@@ -79,7 +79,7 @@ export default function EditGroupPage() {
             name="welcome_message"
             rows={3}
             defaultValue={group.welcome_message ?? ''}
-            className="w-full rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
           />
         </div>
 
@@ -87,8 +87,8 @@ export default function EditGroupPage() {
           <Label>Painéis associados</Label>
           <div className="border rounded-md divide-y max-h-48 overflow-y-auto">
             {allPanels.map(panel => (
-              <label key={panel.id} className="flex items-center gap-3 px-3 py-2 text-sm cursor-pointer hover:bg-gray-50">
-                <GripVertical className="h-4 w-4 text-gray-300 shrink-0" />
+              <label key={panel.id} className="flex items-center gap-3 px-3 py-2 text-sm cursor-pointer hover:bg-muted">
+                <GripVertical className="h-4 w-4 text-muted-foreground/30 shrink-0" />
                 <input
                   type="checkbox"
                   className="rounded"
@@ -101,7 +101,7 @@ export default function EditGroupPage() {
           </div>
         </div>
 
-        {error && <p className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-md">{error}</p>}
+        {error && <p className="text-sm text-destructive bg-destructive/10 px-3 py-2 rounded-md">{error}</p>}
 
         <div className="flex gap-2 pt-2">
           <Button type="submit" disabled={isPending}>

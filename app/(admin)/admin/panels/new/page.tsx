@@ -35,7 +35,7 @@ export default function NewPanelPage() {
         <h1 className="text-xl font-semibold">Novo painel</h1>
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-white rounded-lg border p-6 space-y-4">
+      <form onSubmit={handleSubmit} className="bg-card rounded-lg border border-border p-6 space-y-4">
         <div className="space-y-2">
           <Label htmlFor="name">Nome</Label>
           <Input id="name" name="name" required />
@@ -63,7 +63,7 @@ export default function NewPanelPage() {
           </Select>
         </div>
 
-        {error && <p className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-md">{error}</p>}
+        {error && <p className="text-sm text-destructive bg-destructive/10 px-3 py-2 rounded-md">{error}</p>}
 
         <div className="flex gap-2 pt-2">
           <Button type="submit" disabled={isPending}>

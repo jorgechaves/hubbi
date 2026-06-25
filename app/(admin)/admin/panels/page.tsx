@@ -38,7 +38,7 @@ export default function PanelsPage() {
         </Button>
       </div>
 
-      <div className="bg-white rounded-lg border overflow-hidden">
+      <div className="bg-card rounded-lg border border-border overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow>
@@ -52,7 +52,7 @@ export default function PanelsPage() {
             {panels.map(p => (
               <TableRow key={p.id}>
                 <TableCell className="font-medium">{p.name}</TableCell>
-                <TableCell className="text-gray-500 text-sm">{p.description || '—'}</TableCell>
+                <TableCell className="text-muted-foreground text-sm">{p.description || '—'}</TableCell>
                 <TableCell>
                   <button
                     onClick={() => handleToggle(p.id, !p.active)}

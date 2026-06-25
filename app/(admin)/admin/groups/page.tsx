@@ -35,7 +35,7 @@ export default async function GroupsPage() {
         </Button>
       </div>
 
-      <div className="bg-white rounded-lg border overflow-hidden">
+      <div className="bg-card rounded-lg border border-border overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow>
@@ -50,7 +50,7 @@ export default async function GroupsPage() {
             {groups?.map(g => (
               <TableRow key={g.id}>
                 <TableCell className="font-medium">{g.name}</TableCell>
-                <TableCell className="text-gray-500 text-sm">{g.description || '—'}</TableCell>
+                <TableCell className="text-muted-foreground text-sm">{g.description || '—'}</TableCell>
                 <TableCell>{memberCount(g.id)}</TableCell>
                 <TableCell>{panelCount(g.id)}</TableCell>
                 <TableCell>

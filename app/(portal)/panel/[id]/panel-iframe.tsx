@@ -12,12 +12,12 @@ export function PanelIframe({ panelId, panelName }: Props) {
   return (
     <div className="relative flex-1">
       {loading && !error && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-50">
+        <div className="absolute inset-0 flex items-center justify-center bg-background">
           <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
         </div>
       )}
       {error && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-gray-500">
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-muted-foreground">
           <AlertCircle className="h-8 w-8" />
           <p className="text-sm">Não foi possível carregar o painel.</p>
         </div>
