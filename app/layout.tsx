@@ -34,6 +34,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       lang="pt-BR"
       className={`${spaceMono.variable} ${dmSans.variable} h-full antialiased`}
       style={{ '--color-primary': settings.primary_color } as React.CSSProperties}
+      suppressHydrationWarning
     >
       <body className="h-full font-sans">
         <ThemeProvider>
