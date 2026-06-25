@@ -1,0 +1,28 @@
+'use client'
+
+import { useTransition } from 'react'
+import { Button } from '@/components/ui/button'
+import { deleteGroup } from '@/app/actions/admin'
+import { Trash2 } from 'lucide-react'
+
+type Props = { groupId: string; memberCount: number }
+
+export function DeleteGroupButton({ groupId, memberCount }: Props) {
+  const [isPending, startTransition] = useTransition()
+
+  function handleDelete() {
+    const message = memberCount > 0
+      ? `Este grupo tem ${memberCount} usuário(s) associado(s). Deseja excluir mesmo assim?`
+      : 'Tem certeza que deseja excluir este grupo?'
+
+    if (!confirm(message)) return
+
+    startTransition(async () => { await deleteGroup(groupId) })
+  }
+
+  return (
+    <Button variant="ghost" size="sm" disabled={isPending} onClick={handleDelete}>
+      <Trash2 className="h-4 w-4 text-red-500" />
+    </Button>
+  )
+}

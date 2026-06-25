@@ -1,26 +1,157 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-primary:            var(--primary);
+  --color-background:         var(--background);
+  --color-foreground:         var(--foreground);
+  --font-sans:                var(--font-sans);
+  --font-mono:                var(--font-mono);
+  --color-border:             var(--border);
+  --color-muted:              var(--muted);
+  --color-muted-foreground:   var(--muted-foreground);
+  --color-card:               var(--card);
+  --color-card-foreground:    var(--card-foreground);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary:          var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent:             var(--accent);
+  --color-accent-foreground:  var(--accent-foreground);
+  --color-destructive:        var(--destructive);
+  --color-ring:               var(--ring);
+  --color-input:              var(--input);
+  --color-popover:            var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --radius-sm:  calc(var(--radius) * 0.6);
+  --radius-md:  calc(var(--radius) * 0.8);
+  --radius-lg:  var(--radius);
+  --radius-xl:  calc(var(--radius) * 1.4);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ─────────────────────────────────────────────────────────────
+   LIGHT MODE (default)
+───────────────────────────────────────────────────────────── */
+:root {
+  --background:         #f4f4f8;
+  --foreground:         #0d0d16;
+  --card:               #ffffff;
+  --card-foreground:    #0d0d16;
+  --popover:            #ffffff;
+  --popover-foreground: #0d0d16;
+  --primary:            #0047d4;
+  --primary-foreground: #ffffff;
+  --secondary:          #e8e8f2;
+  --secondary-foreground:#0d0d16;
+  --muted:              #ecedf4;
+  --muted-foreground:   #5c5c7a;
+  --accent:             #e8e8f2;
+  --accent-foreground:  #0d0d16;
+  --destructive:        #dc2626;
+  --border:             rgba(0,0,0,0.09);
+  --input:              rgba(0,0,0,0.06);
+  --ring:               rgba(0,71,212,0.35);
+  --radius:             0.375rem;
+
+  /* Sidebar light */
+  --sidebar:                   #ffffff;
+  --sidebar-foreground:        #0d0d16;
+  --sidebar-primary:           #0047d4;
+  --sidebar-primary-foreground:#ffffff;
+  --sidebar-accent:            rgba(0,71,212,0.07);
+  --sidebar-accent-foreground: #0047d4;
+  --sidebar-border:            rgba(0,0,0,0.07);
+  --sidebar-ring:              rgba(0,71,212,0.3);
+
+  /* Portal accent — overridable by portal_settings */
+  --color-primary:             #0047d4;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   DARK MODE
+───────────────────────────────────────────────────────────── */
+.dark {
+  --background:         #09090f;
+  --foreground:         #eeeef8;
+  --card:               #0f0f1a;
+  --card-foreground:    #eeeef8;
+  --popover:            #13131f;
+  --popover-foreground: #eeeef8;
+  --primary:            #00d4aa;
+  --primary-foreground: #09090f;
+  --secondary:          #1a1a2e;
+  --secondary-foreground: #b0b0d0;
+  --muted:              #111120;
+  --muted-foreground:   #7070a0;
+  --accent:             #1a1a2e;
+  --accent-foreground:  #eeeef8;
+  --destructive:        #ff4d6d;
+  --border:             rgba(255,255,255,0.08);
+  --input:              rgba(255,255,255,0.07);
+  --ring:               rgba(0,212,170,0.4);
+
+  /* Sidebar dark */
+  --sidebar:                   #0c0c18;
+  --sidebar-foreground:        #eeeef8;
+  --sidebar-primary:           #00d4aa;
+  --sidebar-primary-foreground:#09090f;
+  --sidebar-accent:            rgba(0,212,170,0.1);
+  --sidebar-accent-foreground: #00d4aa;
+  --sidebar-border:            rgba(255,255,255,0.06);
+  --sidebar-ring:              rgba(0,212,170,0.3);
+
+  /* Portal accent dark default */
+  --color-primary:             #00d4aa;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   BASE
+───────────────────────────────────────────────────────────── */
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    background: var(--background);
+    color: var(--foreground);
+  }
+  html {
+    font-family: var(--font-sans), 'DM Sans', system-ui, sans-serif;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ─── Dot grid ────────────────────────────────────────────── */
+.bg-grid-light {
+  background-image: radial-gradient(circle, rgba(0,0,0,0.05) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+.bg-grid-dark {
+  background-image: radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+.dark .bg-grid { background-image: radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px); background-size: 24px 24px; }
+.bg-grid      { background-image: radial-gradient(circle, rgba(0,0,0,0.04) 1px, transparent 1px); background-size: 24px 24px; }
+
+/* ─── Scrollbar ───────────────────────────────────────────── */
+::-webkit-scrollbar        { width: 5px; height: 5px; }
+::-webkit-scrollbar-track  { background: transparent; }
+::-webkit-scrollbar-thumb  { background: rgba(128,128,128,0.25); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(128,128,128,0.45); }
+
+/* ─── Animations ─────────────────────────────────────────── */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-up   { animation: fade-up 0.35s ease both; }
+.animate-fade-up-1 { animation-delay: 0.05s; }
+.animate-fade-up-2 { animation-delay: 0.1s; }
+.animate-fade-up-3 { animation-delay: 0.15s; }
+.animate-fade-up-4 { animation-delay: 0.2s; }
+
+/* ─── Mono font ───────────────────────────────────────────── */
+.font-mono-brand {
+  font-family: var(--font-mono), 'Space Mono', monospace;
 }
