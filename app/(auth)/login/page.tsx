@@ -131,7 +131,7 @@ export default function LoginPage() {
             <BarChart2 className="h-4 w-4 text-primary-foreground" />
           </div>
           <span className="font-mono-brand font-bold text-sm tracking-wider text-foreground">
-            hubbi
+            HUBBI
           </span>
         </div>
 
@@ -157,7 +157,7 @@ export default function LoginPage() {
 
         {/* Footer */}
         <p className="text-xs text-muted-foreground/40 font-mono-brand">
-          © {new Date().getFullYear()} hubbi
+          © {new Date().getFullYear()} HUBBI
         </p>
       </div>
 
@@ -172,7 +172,7 @@ export default function LoginPage() {
             >
               <BarChart2 className="h-3.5 w-3.5 text-primary-foreground" />
             </div>
-            <span className="font-mono-brand font-bold text-sm tracking-wider">hubbi</span>
+            <span className="font-mono-brand font-bold text-sm tracking-wider">HUBBI</span>
           </div>
 
           {/* Heading */}
