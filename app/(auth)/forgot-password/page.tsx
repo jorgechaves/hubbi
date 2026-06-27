@@ -9,14 +9,17 @@ import { forgotPassword } from '@/app/actions/auth'
 
 export default function ForgotPasswordPage() {
   const [sent, setSent] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
+    setError(null)
     startTransition(async () => {
-      await forgotPassword(formData)
-      setSent(true)
+      const result = await forgotPassword(formData)
+      if (result?.error) setError(result.error)
+      else setSent(true)
     })
   }
 
@@ -40,6 +43,9 @@ export default function ForgotPasswordPage() {
               <Label htmlFor="email">Email</Label>
               <Input id="email" name="email" type="email" required />
             </div>
+            {error && (
+              <p className="text-sm text-destructive bg-destructive/10 px-3 py-2 rounded-md">{error}</p>
+            )}
             <Button type="submit" className="w-full" disabled={isPending}>
               {isPending ? 'Enviando...' : 'Enviar link'}
             </Button>
