@@ -20,7 +20,7 @@ export default async function DashboardPage() {
   const firstName = (profile?.name || user!.email || '').split(' ')[0].split('@')[0]
 
   return (
-    <div className="p-8 max-w-2xl animate-fade-up">
+    <div className="p-8 max-w-5xl animate-fade-up">
       <div className="space-y-1 mb-8">
         <p className="text-[10px] font-mono-brand uppercase tracking-[0.2em] text-muted-foreground">
           Dashboard
@@ -69,7 +69,7 @@ export default async function DashboardPage() {
           </div>
         </div>
       ) : (
-        <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {panels.map(panel => (
             <Link
               key={panel.id}

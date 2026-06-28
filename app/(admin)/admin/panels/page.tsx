@@ -3,9 +3,7 @@
 import { useEffect, useState, useTransition } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Plus } from 'lucide-react'
+import { Plus, LayoutDashboard } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { togglePanelStatus } from '@/app/actions/admin'
 
@@ -30,49 +28,67 @@ export default function PanelsPage() {
   }
 
   return (
-    <div className="p-6 space-y-4">
+    <div className="p-8 space-y-6 animate-fade-up">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">Painéis</h1>
+        <div className="space-y-0.5">
+          <p className="text-[10px] font-mono-brand uppercase tracking-[0.2em] text-muted-foreground/50">Admin</p>
+          <h1 className="text-xl font-semibold text-foreground flex items-center gap-2">
+            <LayoutDashboard className="h-5 w-5 text-muted-foreground" />
+            Painéis
+          </h1>
+        </div>
         <Button asChild size="sm">
-          <Link href="/admin/panels/new"><Plus className="h-4 w-4 mr-1" />Novo painel</Link>
+          <Link href="/admin/panels/new">
+            <Plus className="h-4 w-4 mr-1" />Novo painel
+          </Link>
         </Button>
       </div>
 
-      <div className="bg-card rounded-lg border border-border overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Nome</TableHead>
-              <TableHead>Descrição</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="w-28" />
-            </TableRow>
-          </TableHeader>
-          <TableBody>
+      <div className="rounded-lg border border-border overflow-hidden bg-card">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b border-border">
+              {['Nome', 'Descrição', 'Status', ''].map(h => (
+                <th key={h} className="text-left px-4 py-3 text-[10px] font-mono-brand uppercase tracking-[0.15em] text-muted-foreground/50">
+                  {h}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
             {panels.map(p => (
-              <TableRow key={p.id}>
-                <TableCell className="font-medium">{p.name}</TableCell>
-                <TableCell className="text-muted-foreground text-sm">{p.description || '—'}</TableCell>
-                <TableCell>
+              <tr
+                key={p.id}
+                className="transition-colors hover:bg-muted/50 border-t border-border first:border-t-0"
+              >
+                <td className="px-4 py-3 font-medium text-foreground">{p.name}</td>
+                <td className="px-4 py-3 text-muted-foreground">
+                  {p.description || <span className="text-muted-foreground/40">—</span>}
+                </td>
+                <td className="px-4 py-3">
                   <button
                     onClick={() => handleToggle(p.id, !p.active)}
                     disabled={isPending}
                     className="focus:outline-none"
                   >
-                    <Badge variant={p.active ? 'outline' : 'secondary'} className="cursor-pointer">
+                    <span className={`inline-flex items-center gap-1.5 text-xs ${p.active ? 'text-green-500' : 'text-red-400'}`}>
+                      <span className={`h-1.5 w-1.5 rounded-full ${p.active ? 'bg-green-500' : 'bg-red-400'}`} />
                       {p.active ? 'Ativo' : 'Inativo'}
-                    </Badge>
+                    </span>
                   </button>
-                </TableCell>
-                <TableCell>
-                  <Button variant="ghost" size="sm" asChild>
-                    <Link href={`/admin/panels/${p.id}`}>Editar</Link>
-                  </Button>
-                </TableCell>
-              </TableRow>
+                </td>
+                <td className="px-4 py-3 text-right">
+                  <Link href={`/admin/panels/${p.id}`} className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+                    Editar →
+                  </Link>
+                </td>
+              </tr>
             ))}
-          </TableBody>
-        </Table>
+          </tbody>
+        </table>
+        {panels.length === 0 && (
+          <div className="py-12 text-center text-sm text-muted-foreground/50">Nenhum painel cadastrado.</div>
+        )}
       </div>
     </div>
   )
