@@ -46,8 +46,18 @@ export default function EditGroupPage() {
     const formData = new FormData(e.currentTarget)
     setError(null)
     startTransition(async () => {
-      await updateGroup(id, formData)
-      await updateGroupPanels(id, selectedPanels)
+      const groupResult = await updateGroup(id, formData)
+      if (groupResult?.error) {
+        setError(groupResult.error)
+        return
+      }
+
+      const panelsResult = await updateGroupPanels(id, selectedPanels)
+      if (panelsResult?.error) {
+        setError(panelsResult.error)
+        return
+      }
+
       router.push('/admin/groups')
     })
   }

@@ -1,6 +1,7 @@
 'use client'
 
 import { useTransition } from 'react'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { deleteGroup } from '@/app/actions/admin'
 import { Trash2 } from 'lucide-react'
@@ -8,6 +9,7 @@ import { Trash2 } from 'lucide-react'
 type Props = { groupId: string; memberCount: number }
 
 export function DeleteGroupButton({ groupId, memberCount }: Props) {
+  const router = useRouter()
   const [isPending, startTransition] = useTransition()
 
   function handleDelete() {
@@ -17,7 +19,14 @@ export function DeleteGroupButton({ groupId, memberCount }: Props) {
 
     if (!confirm(message)) return
 
-    startTransition(async () => { await deleteGroup(groupId) })
+    startTransition(async () => {
+      const result = await deleteGroup(groupId)
+      if (result?.error) {
+        alert(result.error)
+        return
+      }
+      router.refresh()
+    })
   }
 
   return (

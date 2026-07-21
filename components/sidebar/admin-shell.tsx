@@ -28,7 +28,11 @@ export function AdminShell({ portalName, children }: Props) {
   const [isPending, startTransition] = useTransition()
 
   useEffect(() => {
-    if (localStorage.getItem('admin-sidebar-collapsed') === 'true') setCollapsed(true)
+    const frame = requestAnimationFrame(() => {
+      if (localStorage.getItem('admin-sidebar-collapsed') === 'true') setCollapsed(true)
+    })
+
+    return () => cancelAnimationFrame(frame)
   }, [])
 
   const toggleCollapse = () => {

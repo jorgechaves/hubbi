@@ -3,12 +3,19 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { actionErrorMessage, getRequiredString, sanitizeRedirectPath } from '@/lib/security/forms'
 
 export async function login(formData: FormData) {
   const supabase = await createClient()
 
-  const email = formData.get('email') as string
-  const password = formData.get('password') as string
+  let email: string
+  let password: string
+  try {
+    email = getRequiredString(formData, 'email', 'Email', { max: 320 })
+    password = getRequiredString(formData, 'password', 'Senha', { max: 256 })
+  } catch (error) {
+    return { error: actionErrorMessage(error) }
+  }
 
   const { error, data } = await supabase.auth.signInWithPassword({ email, password })
 
@@ -28,7 +35,7 @@ export async function login(formData: FormData) {
     return { error: 'Conta desativada. Contate o administrador.' }
   }
 
-  const next = (formData.get('next') as string) || '/dashboard'
+  const next = sanitizeRedirectPath(formData.get('next'))
   revalidatePath('/', 'layout')
   redirect(next)
 }
@@ -42,7 +49,12 @@ export async function logout() {
 
 export async function forgotPassword(formData: FormData) {
   const supabase = await createClient()
-  const email = formData.get('email') as string
+  let email: string
+  try {
+    email = getRequiredString(formData, 'email', 'Email', { max: 320 })
+  } catch (error) {
+    return { error: actionErrorMessage(error) }
+  }
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
@@ -59,7 +71,16 @@ export async function forgotPassword(formData: FormData) {
 
 export async function resetPassword(formData: FormData) {
   const supabase = await createClient()
-  const password = formData.get('password') as string
+  let password: string
+  try {
+    password = getRequiredString(formData, 'password', 'Senha', { max: 256 })
+  } catch (error) {
+    return { error: actionErrorMessage(error) }
+  }
+
+  if (password.length < 8) {
+    return { error: 'A senha deve ter no mínimo 8 caracteres.' }
+  }
 
   const { error } = await supabase.auth.updateUser({ password })
 

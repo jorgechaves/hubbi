@@ -42,8 +42,18 @@ export default function EditPanelPage() {
     const formData = new FormData(e.currentTarget)
     setError(null)
     startTransition(async () => {
-      await updatePanel(id, formData)
-      await updatePanelGroups(id, selectedGroups)
+      const panelResult = await updatePanel(id, formData)
+      if (panelResult?.error) {
+        setError(panelResult.error)
+        return
+      }
+
+      const groupsResult = await updatePanelGroups(id, selectedGroups)
+      if (groupsResult?.error) {
+        setError(groupsResult.error)
+        return
+      }
+
       router.push('/admin/panels')
     })
   }

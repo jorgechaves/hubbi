@@ -10,17 +10,16 @@ import { resetPassword } from '@/app/actions/auth'
 import { Loader2 } from 'lucide-react'
 
 export function ResetPasswordClient({ code }: { code?: string }) {
-  const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading')
-  const [exchangeError, setExchangeError] = useState<string | null>(null)
+  const [status, setStatus] = useState<'loading' | 'ready' | 'error'>(code ? 'loading' : 'error')
+  const [exchangeError, setExchangeError] = useState<string | null>(
+    code ? null : 'Link inválido ou expirado.'
+  )
   const [formError, setFormError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
 
   useEffect(() => {
-    if (!code) {
-      setStatus('error')
-      setExchangeError('Link inválido ou expirado.')
-      return
-    }
+    if (!code) return
+
     const supabase = createClient()
     supabase.auth.exchangeCodeForSession(code).then(({ error }) => {
       if (error) {

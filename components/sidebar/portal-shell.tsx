@@ -18,7 +18,11 @@ export function PortalShell({ panels, portalName, logoUrl, isAdmin, children }: 
   const [collapsed, setCollapsed] = useState(false)
 
   useEffect(() => {
-    if (localStorage.getItem('sidebar-collapsed') === 'true') setCollapsed(true)
+    const frame = requestAnimationFrame(() => {
+      if (localStorage.getItem('sidebar-collapsed') === 'true') setCollapsed(true)
+    })
+
+    return () => cancelAnimationFrame(frame)
   }, [])
 
   const toggleCollapse = () => {

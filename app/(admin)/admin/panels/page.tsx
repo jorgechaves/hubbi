@@ -11,6 +11,7 @@ type Panel = { id: string; name: string; description: string | null; active: boo
 
 export default function PanelsPage() {
   const [panels, setPanels] = useState<Panel[]>([])
+  const [error, setError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
 
   useEffect(() => {
@@ -21,8 +22,13 @@ export default function PanelsPage() {
   }, [])
 
   function handleToggle(panelId: string, active: boolean) {
+    setError(null)
     startTransition(async () => {
-      await togglePanelStatus(panelId, active)
+      const result = await togglePanelStatus(panelId, active)
+      if (result?.error) {
+        setError(result.error)
+        return
+      }
       setPanels(prev => prev.map(p => p.id === panelId ? { ...p, active } : p))
     })
   }
@@ -43,6 +49,8 @@ export default function PanelsPage() {
           </Link>
         </Button>
       </div>
+
+      {error && <p className="text-sm text-destructive bg-destructive/10 px-3 py-2 rounded-md">{error}</p>}
 
       <div className="rounded-lg border border-border overflow-hidden bg-card">
         <table className="w-full text-sm">

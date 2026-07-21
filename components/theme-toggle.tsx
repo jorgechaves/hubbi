@@ -8,7 +8,10 @@ export function ThemeToggle() {
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
 
-  useEffect(() => setMounted(true), [])
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => setMounted(true))
+    return () => cancelAnimationFrame(frame)
+  }, [])
   if (!mounted) return <div className="h-7 w-14 rounded-full bg-current/10 animate-pulse" />
 
   const isDark = theme === 'dark'
