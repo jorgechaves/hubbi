@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { createClient as createServiceClient } from '@supabase/supabase-js'
 import { Plus, Users } from 'lucide-react'
 import { AdminListFilters } from '@/components/admin/list-filters'
+import { DeleteUserButton } from './delete-user-button'
 import { parseRoleFilter, parseSearch, parseStatusFilter, toSearchPattern } from '@/lib/admin/list-query'
 
 export default async function UsersPage({ searchParams }: { searchParams: Promise<{ q?: string; role?: string; status?: string }> }) {
@@ -88,9 +89,12 @@ export default async function UsersPage({ searchParams }: { searchParams: Promis
                   </span>
                 </td>
                 <td className="px-4 py-3 text-right">
-                  <Link href={`/admin/users/${p.id}`} className="text-xs text-muted-foreground hover:text-foreground transition-colors">
-                    Editar →
-                  </Link>
+                  <div className="flex items-center justify-end gap-2">
+                    <Link href={`/admin/users/${p.id}`} className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+                      Editar →
+                    </Link>
+                    <DeleteUserButton userId={p.id} name={p.name} email={p.email} />
+                  </div>
                 </td>
               </tr>
             ))}

@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { createClient as createServiceClient } from '@supabase/supabase-js'
 import { requireAdmin } from '@/lib/security/admin'
+import { assertUserDeletionAllowed } from '@/lib/security/account'
 import {
   actionErrorMessage,
   getOptionalString,
@@ -133,6 +134,54 @@ export async function updateUser(userId: string, formData: FormData) {
 
   revalidatePath('/admin/users')
   return { success: true, passwordChanged: Boolean(temporaryPassword) }
+}
+
+export async function deleteUser(userId: string) {
+  let context: Awaited<ReturnType<typeof requireAdmin>>
+  try {
+    context = await requireAdmin()
+  } catch (error) {
+    return { error: actionErrorMessage(error) }
+  }
+
+  const parsed = parseInput(() => parseUuid(userId, 'Usuário'))
+  if ('error' in parsed) return { error: parsed.error }
+
+  const service = getServiceClient()
+  const { data: target, error: targetError } = await service
+    .from('profiles')
+    .select('id, role, active')
+    .eq('id', parsed.data)
+    .single()
+  if (targetError || !target) return { error: 'Usuário não encontrado.' }
+
+  const { count: activeAdminCount, error: countError } = await service
+    .from('profiles')
+    .select('id', { count: 'exact', head: true })
+    .eq('role', 'admin')
+    .eq('active', true)
+  if (countError) return { error: countError.message }
+
+  try {
+    assertUserDeletionAllowed({
+      targetId: target.id,
+      currentUserId: context.user.id,
+      targetRole: target.role,
+      targetActive: target.active,
+      activeAdminCount: activeAdminCount ?? 0,
+    })
+  } catch (error) {
+    return { error: actionErrorMessage(error) }
+  }
+
+  const { error: signOutError } = await service.auth.admin.signOut(parsed.data, 'global')
+  if (signOutError) return { error: signOutError.message }
+
+  const { error: deleteError } = await service.auth.admin.deleteUser(parsed.data)
+  if (deleteError) return { error: deleteError.message }
+
+  revalidatePath('/admin/users')
+  return { success: true }
 }
 
 // ─── Groups ───────────────────────────────────────────────────
