@@ -4,6 +4,7 @@ import assert from 'node:assert/strict'
 import {
   ActionError,
   getOptionalString,
+  getPasswordChangeInput,
   getOptionalPassword,
   getRequiredString,
   parseBoolean,
@@ -60,6 +61,26 @@ test('parseBoolean handles select values explicitly', () => {
   assert.equal(parseBoolean('true', 'Status'), true)
   assert.equal(parseBoolean('false', 'Status'), false)
   assert.throws(() => parseBoolean('yes', 'Status'), /Status/)
+})
+
+test('requires current password, matching new password, and minimum length', () => {
+  const form = new FormData()
+  form.set('current_password', 'atual-segura')
+  form.set('new_password', 'nova-segura')
+  form.set('password_confirmation', 'nova-segura')
+  assert.deepEqual(getPasswordChangeInput(form), { currentPassword: 'atual-segura', newPassword: 'nova-segura' })
+
+  const short = new FormData()
+  short.set('current_password', 'atual-segura')
+  short.set('new_password', 'curta')
+  short.set('password_confirmation', 'curta')
+  assert.throws(() => getPasswordChangeInput(short), /mínimo 8 caracteres/)
+
+  const mismatch = new FormData()
+  mismatch.set('current_password', 'atual-segura')
+  mismatch.set('new_password', 'nova-segura')
+  mismatch.set('password_confirmation', 'outra')
+  assert.throws(() => getPasswordChangeInput(mismatch), /não coincidem/)
 })
 
 test('accepts an empty temporary password and validates a confirmed one', () => {

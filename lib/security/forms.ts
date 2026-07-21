@@ -86,6 +86,15 @@ export function getOptionalPassword(formData: FormData) {
   return password
 }
 
+export function getPasswordChangeInput(formData: FormData) {
+  const currentPassword = getRequiredString(formData, 'current_password', 'Senha atual', { max: 256 })
+  const newPassword = getRequiredString(formData, 'new_password', 'Nova senha', { max: 256 })
+  const confirmation = getRequiredString(formData, 'password_confirmation', 'Confirmação de senha', { max: 256 })
+  if (newPassword.length < 8) throw new ActionError('A nova senha deve ter no mínimo 8 caracteres.')
+  if (newPassword !== confirmation) throw new ActionError('As senhas não coincidem.')
+  return { currentPassword, newPassword }
+}
+
 export function parseRole(value: FormDataEntryValue | string | null | undefined) {
   if (value == null || value === '') return 'user'
   if (value === 'admin' || value === 'user') return value
