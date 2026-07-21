@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { createClient } from '@/lib/supabase/client'
 import { updatePanel, updatePanelGroups } from '@/app/actions/admin'
 import { ArrowLeft, ExternalLink } from 'lucide-react'
+import { toast } from 'sonner'
 
 type Panel = { id: string; name: string; url: string; description: string | null; icon: string | null; active: boolean }
 type Group = { id: string; name: string }
@@ -54,6 +55,7 @@ export default function EditPanelPage() {
         return
       }
 
+      toast.success('Painel atualizado.')
       router.push('/admin/panels')
     })
   }

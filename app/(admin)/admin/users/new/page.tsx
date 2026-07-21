@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { createClient } from '@/lib/supabase/client'
 import { createUser } from '@/app/actions/admin'
 import { ArrowLeft } from 'lucide-react'
+import { toast } from 'sonner'
 
 type Group = { id: string; name: string }
 
@@ -34,7 +35,7 @@ export default function NewUserPage() {
     startTransition(async () => {
       const result = await createUser(formData)
       if (result?.error) setError(result.error)
-      else router.push('/admin/users')
+      else { toast.success('Usuário criado.'); router.push('/admin/users') }
     })
   }
 

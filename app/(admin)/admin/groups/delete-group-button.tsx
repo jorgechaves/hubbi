@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { deleteGroup } from '@/app/actions/admin'
 import { Trash2 } from 'lucide-react'
+import { toast } from 'sonner'
 
 type Props = { groupId: string; memberCount: number }
 
@@ -22,9 +23,10 @@ export function DeleteGroupButton({ groupId, memberCount }: Props) {
     startTransition(async () => {
       const result = await deleteGroup(groupId)
       if (result?.error) {
-        alert(result.error)
+        toast.error(result.error)
         return
       }
+      toast.success('Grupo excluído.')
       router.refresh()
     })
   }

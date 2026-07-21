@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { createPanel } from '@/app/actions/admin'
 import { ArrowLeft } from 'lucide-react'
+import { toast } from 'sonner'
 
 export default function NewPanelPage() {
   const router = useRouter()
@@ -22,7 +23,7 @@ export default function NewPanelPage() {
     startTransition(async () => {
       const result = await createPanel(formData)
       if (result?.error) setError(result.error)
-      else router.push('/admin/panels')
+      else { toast.success('Painel criado.'); router.push('/admin/panels') }
     })
   }
 

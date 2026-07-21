@@ -3,14 +3,20 @@ import { createClient } from '@/lib/supabase/server'
 import { Button } from '@/components/ui/button'
 import { Plus, Users } from 'lucide-react'
 import { DeleteGroupButton } from './delete-group-button'
+import { AdminListFilters } from '@/components/admin/list-filters'
+import { parseSearch, toSearchPattern } from '@/lib/admin/list-query'
 
-export default async function GroupsPage() {
+export default async function GroupsPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
+  const search = parseSearch((await searchParams).q)
+  const pattern = toSearchPattern(search)
   const supabase = await createClient()
 
-  const { data: groups } = await supabase
+  let query = supabase
     .from('groups')
     .select('id, name, description, created_at')
     .order('name')
+  if (pattern) query = query.or(`name.ilike.${pattern},description.ilike.${pattern}`)
+  const { data: groups } = await query
 
   const groupIds = groups?.map(g => g.id) ?? []
 
@@ -40,6 +46,8 @@ export default async function GroupsPage() {
           </Link>
         </Button>
       </div>
+
+      <AdminListFilters search={search} filters={[]} />
 
       <div className="rounded-lg border border-border overflow-hidden bg-card">
         <table className="w-full text-sm">
@@ -77,7 +85,7 @@ export default async function GroupsPage() {
           </tbody>
         </table>
         {(!groups || groups.length === 0) && (
-          <div className="py-12 text-center text-sm text-muted-foreground/50">Nenhum grupo cadastrado.</div>
+          <div className="py-12 text-center text-sm text-muted-foreground/50">{search ? 'Nenhum resultado para os filtros aplicados.' : 'Nenhum grupo cadastrado.'}</div>
         )}
       </div>
     </div>

@@ -2,6 +2,18 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
+## Administração
+
+As listas administrativas aceitam filtros pela URL e preservam a seleção ao recarregar:
+
+| Página | Parâmetros |
+| --- | --- |
+| `/admin/users` | `q`, `role=admin|user`, `status=active|inactive` |
+| `/admin/groups` | `q` |
+| `/admin/panels` | `q`, `status=active|inactive` |
+
+As ações administrativas mostram confirmação de sucesso ou erro e desabilitam o botão enquanto estão em processamento. A tela de logs não recebe busca ou filtros nesta entrega.
+
 First, run the development server:
 
 ```bash

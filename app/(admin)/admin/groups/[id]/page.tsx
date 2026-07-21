@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label'
 import { createClient } from '@/lib/supabase/client'
 import { updateGroup, updateGroupPanels } from '@/app/actions/admin'
 import { ArrowLeft, GripVertical } from 'lucide-react'
+import { toast } from 'sonner'
 
 type Group = { id: string; name: string; description: string | null; welcome_message: string | null }
 type Panel = { id: string; name: string }
@@ -58,6 +59,7 @@ export default function EditGroupPage() {
         return
       }
 
+      toast.success('Grupo atualizado.')
       router.push('/admin/groups')
     })
   }
