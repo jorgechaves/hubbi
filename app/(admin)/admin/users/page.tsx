@@ -1,17 +1,28 @@
 import Link from 'next/link'
 import { createClient as createServiceClient } from '@supabase/supabase-js'
 import { Plus, Users } from 'lucide-react'
+import { AdminListFilters } from '@/components/admin/list-filters'
+import { parseRoleFilter, parseSearch, parseStatusFilter, toSearchPattern } from '@/lib/admin/list-query'
 
-export default async function UsersPage() {
+export default async function UsersPage({ searchParams }: { searchParams: Promise<{ q?: string; role?: string; status?: string }> }) {
+  const params = await searchParams
+  const search = parseSearch(params.q)
+  const role = parseRoleFilter(params.role)
+  const status = parseStatusFilter(params.status)
+  const pattern = toSearchPattern(search)
   const service = createServiceClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   )
 
-  const { data: profiles } = await service
+  let query = service
     .from('profiles')
     .select('id, name, email, role, active, created_at')
     .order('created_at', { ascending: false })
+  if (pattern) query = query.or(`name.ilike.${pattern},email.ilike.${pattern}`)
+  if (role) query = query.eq('role', role)
+  if (status !== null) query = query.eq('active', status)
+  const { data: profiles } = await query
 
   return (
     <div className="p-8 space-y-6 animate-fade-up">
@@ -32,6 +43,11 @@ export default async function UsersPage() {
           Novo usuário
         </Link>
       </div>
+
+      <AdminListFilters search={search} filters={[
+        { name: 'role', label: 'Função', value: role ?? '', options: [{ value: '', label: 'Todas' }, { value: 'admin', label: 'Admin' }, { value: 'user', label: 'Usuário' }] },
+        { name: 'status', label: 'Status', value: status === null ? '' : status ? 'active' : 'inactive', options: [{ value: '', label: 'Todos' }, { value: 'active', label: 'Ativo' }, { value: 'inactive', label: 'Inativo' }] },
+      ]} />
 
       <div className="rounded-lg border border-border overflow-hidden bg-card">
         <table className="w-full text-sm">
@@ -81,7 +97,7 @@ export default async function UsersPage() {
           </tbody>
         </table>
         {(!profiles || profiles.length === 0) && (
-          <div className="py-12 text-center text-sm text-muted-foreground/50">Nenhum usuário cadastrado.</div>
+          <div className="py-12 text-center text-sm text-muted-foreground/50">{search || role || status !== null ? 'Nenhum resultado para os filtros aplicados.' : 'Nenhum usuário cadastrado.'}</div>
         )}
       </div>
     </div>

@@ -2,14 +2,21 @@
 
 import { useEffect, useState, useTransition } from 'react'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Plus, LayoutDashboard } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { togglePanelStatus } from '@/app/actions/admin'
+import { AdminListFilters } from '@/components/admin/list-filters'
+import { parseSearch, parseStatusFilter } from '@/lib/admin/list-query'
+import { toast } from 'sonner'
 
 type Panel = { id: string; name: string; description: string | null; active: boolean }
 
 export default function PanelsPage() {
+  const searchParams = useSearchParams()
+  const search = parseSearch(searchParams.get('q'))
+  const status = parseStatusFilter(searchParams.get('status'))
   const [panels, setPanels] = useState<Panel[]>([])
   const [error, setError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
@@ -27,9 +34,11 @@ export default function PanelsPage() {
       const result = await togglePanelStatus(panelId, active)
       if (result?.error) {
         setError(result.error)
+        toast.error(result.error)
         return
       }
       setPanels(prev => prev.map(p => p.id === panelId ? { ...p, active } : p))
+      toast.success(active ? 'Painel ativado.' : 'Painel desativado.')
     })
   }
 
@@ -50,6 +59,10 @@ export default function PanelsPage() {
         </Button>
       </div>
 
+      <AdminListFilters search={search} filters={[
+        { name: 'status', label: 'Status', value: status === null ? '' : status ? 'active' : 'inactive', options: [{ value: '', label: 'Todos' }, { value: 'active', label: 'Ativo' }, { value: 'inactive', label: 'Inativo' }] },
+      ]} />
+
       {error && <p className="text-sm text-destructive bg-destructive/10 px-3 py-2 rounded-md">{error}</p>}
 
       <div className="rounded-lg border border-border overflow-hidden bg-card">
@@ -64,7 +77,7 @@ export default function PanelsPage() {
             </tr>
           </thead>
           <tbody>
-            {panels.map(p => (
+            {panels.filter(p => (!search || `${p.name} ${p.description ?? ''}`.toLocaleLowerCase('pt-BR').includes(search.toLocaleLowerCase('pt-BR'))) && (status === null || p.active === status)).map(p => (
               <tr
                 key={p.id}
                 className="transition-colors hover:bg-muted/50 border-t border-border first:border-t-0"
@@ -94,8 +107,8 @@ export default function PanelsPage() {
             ))}
           </tbody>
         </table>
-        {panels.length === 0 && (
-          <div className="py-12 text-center text-sm text-muted-foreground/50">Nenhum painel cadastrado.</div>
+        {panels.filter(p => (!search || `${p.name} ${p.description ?? ''}`.toLocaleLowerCase('pt-BR').includes(search.toLocaleLowerCase('pt-BR'))) && (status === null || p.active === status)).length === 0 && (
+          <div className="py-12 text-center text-sm text-muted-foreground/50">{search || status !== null ? 'Nenhum resultado para os filtros aplicados.' : 'Nenhum painel cadastrado.'}</div>
         )}
       </div>
     </div>

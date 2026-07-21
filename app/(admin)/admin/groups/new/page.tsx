@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { createGroup } from '@/app/actions/admin'
 import { ArrowLeft } from 'lucide-react'
+import { toast } from 'sonner'
 
 export default function NewGroupPage() {
   const router = useRouter()
@@ -21,7 +22,7 @@ export default function NewGroupPage() {
     startTransition(async () => {
       const result = await createGroup(formData)
       if (result?.error) setError(result.error)
-      else router.push('/admin/groups')
+      else { toast.success('Grupo criado.'); router.push('/admin/groups') }
     })
   }
 

@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { updateUser } from '@/app/actions/admin'
 import { ArrowLeft } from 'lucide-react'
+import { toast } from 'sonner'
 import { createClient } from '@/lib/supabase/client'
 import { useEffect } from 'react'
 
@@ -46,7 +47,7 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
     startTransition(async () => {
       const result = await updateUser(id, formData) as { error?: string; success?: boolean }
       if (result?.error) setError(result.error)
-      else router.push('/admin/users')
+      else { toast.success('Usuário atualizado.'); router.push('/admin/users') }
     })
   }
 

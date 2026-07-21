@@ -292,6 +292,7 @@ export async function togglePanelStatus(panelId: string, active: boolean) {
   const { error } = await supabase.from('panels').update({ active }).eq('id', parsed.data)
   if (error) return { error: error.message }
   revalidatePath('/admin/panels')
+  return { success: true }
 }
 
 export async function updatePanelGroups(panelId: string, groupIds: string[]) {
