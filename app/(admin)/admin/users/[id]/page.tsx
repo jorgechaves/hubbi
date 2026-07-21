@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { updateUser } from '@/app/actions/admin'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, KeyRound } from 'lucide-react'
 import { toast } from 'sonner'
 import { createClient } from '@/lib/supabase/client'
 import { useEffect } from 'react'
@@ -24,6 +24,7 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
   const [groups,   setGroups]   = useState<Group[]>([])
   const [userGroups, setUserGroups] = useState<string[]>([])
   const [error,    setError]    = useState<string | null>(null)
+  const [showPasswordReset, setShowPasswordReset] = useState(false)
   const [isPending, startTransition] = useTransition()
 
   useEffect(() => {
@@ -45,9 +46,12 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
     userGroups.forEach(gid => formData.append('group_ids', gid))
     setError(null)
     startTransition(async () => {
-      const result = await updateUser(id, formData) as { error?: string; success?: boolean }
+      const result = await updateUser(id, formData) as { error?: string; success?: boolean; passwordChanged?: boolean }
       if (result?.error) setError(result.error)
-      else { toast.success('Usuário atualizado.'); router.push('/admin/users') }
+      else {
+        toast.success(result.passwordChanged ? 'Usuário atualizado. Senha temporária redefinida.' : 'Usuário atualizado.')
+        router.push('/admin/users')
+      }
     })
   }
 
@@ -110,6 +114,28 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
               </label>
             ))}
           </div>
+        </div>
+
+        <div className="rounded-lg border border-border p-3 space-y-3">
+          <button
+            type="button"
+            onClick={() => setShowPasswordReset(value => !value)}
+            className="flex w-full items-center gap-2 text-sm font-medium text-foreground"
+            aria-expanded={showPasswordReset}
+          >
+            <KeyRound className="h-4 w-4" />
+            Redefinir senha temporária
+          </button>
+          {showPasswordReset && <>
+            <div className="space-y-2">
+              <Label htmlFor="temporary_password">Nova senha temporária</Label>
+              <Input id="temporary_password" name="temporary_password" type="password" minLength={8} autoComplete="new-password" required />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password_confirmation">Confirmar nova senha</Label>
+              <Input id="password_confirmation" name="password_confirmation" type="password" minLength={8} autoComplete="new-password" required />
+            </div>
+          </>}
         </div>
 
         {error && <p className="text-sm text-destructive bg-destructive/10 px-3 py-2 rounded-md">{error}</p>}
