@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { actionErrorMessage, getRequiredString, sanitizeRedirectPath } from '@/lib/security/forms'
+import { actionErrorMessage, getPasswordChangeInput, getRequiredString, sanitizeRedirectPath } from '@/lib/security/forms'
 
 export async function login(formData: FormData) {
   const supabase = await createClient()
@@ -89,4 +89,29 @@ export async function resetPassword(formData: FormData) {
   }
 
   redirect('/login?reset=success')
+}
+
+export async function changeOwnPassword(formData: FormData) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user?.email) return { error: 'Sessão expirada. Entre novamente.' }
+
+  let currentPassword: string
+  let newPassword: string
+  try {
+    ({ currentPassword, newPassword } = getPasswordChangeInput(formData))
+  } catch (error) {
+    return { error: actionErrorMessage(error) }
+  }
+
+  const { error: verifyError } = await supabase.auth.signInWithPassword({
+    email: user.email,
+    password: currentPassword,
+  })
+  if (verifyError) return { error: 'Senha atual incorreta.' }
+
+  const { error: updateError } = await supabase.auth.updateUser({ password: newPassword })
+  if (updateError) return { error: 'Não foi possível alterar a senha.' }
+
+  return { success: true }
 }

@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, BarChart2, X, ChevronLeft } from 'lucide-react'
+import { LayoutDashboard, BarChart2, X, ChevronLeft, UserCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { Panel } from '@/lib/db/panels'
 
@@ -116,6 +116,17 @@ export function Sidebar({ panels, portalName, open, onClose, collapsed, onToggle
               Nenhum painel disponível.<br />Contate o administrador.
             </p>
           )}
+
+          <div className="pt-5">
+            <NavItem
+              href="/account"
+              label="Minha conta"
+              icon={<UserCircle className="h-4 w-4 shrink-0" />}
+              active={pathname === '/account'}
+              onClick={onClose}
+              collapsed={collapsed}
+            />
+          </div>
         </nav>
 
         {/* Bottom accent */}
