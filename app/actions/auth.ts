@@ -96,6 +96,13 @@ export async function changeOwnPassword(formData: FormData) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user?.email) return { error: 'Sessão expirada. Entre novamente.' }
 
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('active')
+    .eq('id', user.id)
+    .single()
+  if (!profile?.active) return { error: 'Acesso negado.' }
+
   let currentPassword: string
   let newPassword: string
   try {

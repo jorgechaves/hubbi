@@ -3,7 +3,6 @@
 import { revalidatePath } from 'next/cache'
 import { createClient as createServiceClient } from '@supabase/supabase-js'
 import { requireAdmin } from '@/lib/security/admin'
-import { assertUserDeletionAllowed } from '@/lib/security/account'
 import {
   actionErrorMessage,
   getOptionalString,
@@ -148,34 +147,12 @@ export async function deleteUser(userId: string) {
   if ('error' in parsed) return { error: parsed.error }
 
   const service = getServiceClient()
-  const { data: target, error: targetError } = await service
-    .from('profiles')
-    .select('id, role, active')
-    .eq('id', parsed.data)
-    .single()
-  if (targetError || !target) return { error: 'Usuário não encontrado.' }
-
-  const { count: activeAdminCount, error: countError } = await service
-    .from('profiles')
-    .select('id', { count: 'exact', head: true })
-    .eq('role', 'admin')
-    .eq('active', true)
-  if (countError) return { error: countError.message }
-
-  try {
-    assertUserDeletionAllowed({
-      targetId: target.id,
-      currentUserId: context.user.id,
-      targetRole: target.role,
-      targetActive: target.active,
-      activeAdminCount: activeAdminCount ?? 0,
-    })
-  } catch (error) {
-    return { error: actionErrorMessage(error) }
-  }
-
-  const { error: signOutError } = await service.auth.admin.signOut(parsed.data, 'global')
-  if (signOutError) return { error: signOutError.message }
+  const { data: reservation, error: reservationError } = await service.rpc('reserve_user_deletion', {
+    target_user_id: parsed.data,
+    current_user_id: context.user.id,
+  })
+  if (reservationError) return { error: reservationError.message }
+  if (!reservation?.length) return { error: 'Usuário não encontrado.' }
 
   const { error: deleteError } = await service.auth.admin.deleteUser(parsed.data)
   if (deleteError) return { error: deleteError.message }
