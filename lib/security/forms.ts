@@ -76,6 +76,16 @@ export function getOptionalString(
   return trimmed
 }
 
+export function getOptionalPassword(formData: FormData) {
+  const password = getOptionalString(formData, 'temporary_password', 'Senha temporária', { max: 256 })
+  if (password === null) return null
+
+  const confirmation = getRequiredString(formData, 'password_confirmation', 'Confirmação de senha', { max: 256 })
+  if (password.length < 8) throw new ActionError('A senha temporária deve ter no mínimo 8 caracteres.')
+  if (password !== confirmation) throw new ActionError('As senhas não coincidem.')
+  return password
+}
+
 export function parseRole(value: FormDataEntryValue | string | null | undefined) {
   if (value == null || value === '') return 'user'
   if (value === 'admin' || value === 'user') return value

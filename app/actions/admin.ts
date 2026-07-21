@@ -6,6 +6,7 @@ import { requireAdmin } from '@/lib/security/admin'
 import {
   actionErrorMessage,
   getOptionalString,
+  getOptionalPassword,
   getRequiredString,
   parseBoolean,
   parseHttpUrl,
@@ -98,9 +99,10 @@ export async function updateUser(userId: string, formData: FormData) {
     role: parseRole(formData.get('role')),
     active: parseBoolean(formData.get('active'), 'Status'),
     groupIds: parseUuidList(formData.getAll('group_ids'), 'Grupos'),
+    temporaryPassword: getOptionalPassword(formData),
   }))
   if ('error' in parsed) return { error: parsed.error }
-  const { safeUserId, name, role, active, groupIds } = parsed.data
+  const { safeUserId, name, role, active, groupIds, temporaryPassword } = parsed.data
 
   const { error: profileError } = await service
     .from('profiles')
@@ -117,13 +119,20 @@ export async function updateUser(userId: string, formData: FormData) {
     if (insertGroupsError) return { error: insertGroupsError.message }
   }
 
+  if (temporaryPassword) {
+    const { error: passwordError } = await service.auth.admin.updateUserById(safeUserId, {
+      password: temporaryPassword,
+    })
+    if (passwordError) return { error: passwordError.message }
+  }
+
   if (!active) {
     const { error: signOutError } = await service.auth.admin.signOut(safeUserId, 'global')
     if (signOutError) return { error: signOutError.message }
   }
 
   revalidatePath('/admin/users')
-  return { success: true }
+  return { success: true, passwordChanged: Boolean(temporaryPassword) }
 }
 
 // ─── Groups ───────────────────────────────────────────────────

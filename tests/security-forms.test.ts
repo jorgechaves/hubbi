@@ -4,6 +4,7 @@ import assert from 'node:assert/strict'
 import {
   ActionError,
   getOptionalString,
+  getOptionalPassword,
   getRequiredString,
   parseBoolean,
   parseHttpUrl,
@@ -59,4 +60,26 @@ test('parseBoolean handles select values explicitly', () => {
   assert.equal(parseBoolean('true', 'Status'), true)
   assert.equal(parseBoolean('false', 'Status'), false)
   assert.throws(() => parseBoolean('yes', 'Status'), /Status/)
+})
+
+test('accepts an empty temporary password and validates a confirmed one', () => {
+  const empty = new FormData()
+  assert.equal(getOptionalPassword(empty), null)
+
+  const valid = new FormData()
+  valid.set('temporary_password', 'nova-senha-8')
+  valid.set('password_confirmation', 'nova-senha-8')
+  assert.equal(getOptionalPassword(valid), 'nova-senha-8')
+})
+
+test('rejects short or mismatched temporary passwords', () => {
+  const short = new FormData()
+  short.set('temporary_password', 'curta')
+  short.set('password_confirmation', 'curta')
+  assert.throws(() => getOptionalPassword(short), /mínimo 8/)
+
+  const mismatch = new FormData()
+  mismatch.set('temporary_password', 'senha-segura')
+  mismatch.set('password_confirmation', 'outra-senha')
+  assert.throws(() => getOptionalPassword(mismatch), /não coincidem/)
 })
