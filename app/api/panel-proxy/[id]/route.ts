@@ -13,6 +13,15 @@ export async function GET(request: NextRequest, { params }: Params) {
     return new NextResponse('Unauthorized', { status: 401 })
   }
 
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('active')
+    .eq('id', user.id)
+    .single()
+  if (!profile?.active) {
+    return new NextResponse('Forbidden', { status: 403 })
+  }
+
   // Get user groups
   const { data: userGroups } = await supabase
     .from('user_groups')

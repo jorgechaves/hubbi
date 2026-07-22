@@ -126,11 +126,6 @@ export async function updateUser(userId: string, formData: FormData) {
     if (passwordError) return { error: passwordError.message }
   }
 
-  if (!active) {
-    const { error: signOutError } = await service.auth.admin.signOut(safeUserId, 'global')
-    if (signOutError) return { error: signOutError.message }
-  }
-
   revalidatePath('/admin/users')
   return { success: true, passwordChanged: Boolean(temporaryPassword) }
 }
@@ -153,9 +148,19 @@ export async function deleteUser(userId: string) {
   })
   if (reservationError) return { error: reservationError.message }
   if (!reservation?.length) return { error: 'Usuário não encontrado.' }
+  const wasActive = Boolean(reservation[0]?.was_active)
 
   const { error: deleteError } = await service.auth.admin.deleteUser(parsed.data)
-  if (deleteError) return { error: deleteError.message }
+  if (deleteError) {
+    if (wasActive) {
+      await service
+        .from('profiles')
+        .update({ active: true })
+        .eq('id', parsed.data)
+        .eq('active', false)
+    }
+    return { error: deleteError.message }
+  }
 
   revalidatePath('/admin/users')
   return { success: true }
