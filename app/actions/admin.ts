@@ -104,11 +104,14 @@ export async function updateUser(userId: string, formData: FormData) {
   if ('error' in parsed) return { error: parsed.error }
   const { safeUserId, name, role, active, groupIds, temporaryPassword } = parsed.data
 
-  const { error: profileError } = await service
-    .from('profiles')
-    .update({ name, role, active })
-    .eq('id', safeUserId)
+  const { data: updatedProfile, error: profileError } = await service.rpc('update_user_profile_guarded', {
+    target_user_id: safeUserId,
+    new_name: name,
+    new_role: role,
+    new_active: active,
+  })
   if (profileError) return { error: profileError.message }
+  if (!updatedProfile?.length) return { error: 'Usuário não encontrado.' }
 
   const { error: deleteGroupsError } = await service.from('user_groups').delete().eq('user_id', safeUserId)
   if (deleteGroupsError) return { error: deleteGroupsError.message }
@@ -153,11 +156,7 @@ export async function deleteUser(userId: string) {
   const { error: deleteError } = await service.auth.admin.deleteUser(parsed.data)
   if (deleteError) {
     if (wasActive) {
-      await service
-        .from('profiles')
-        .update({ active: true })
-        .eq('id', parsed.data)
-        .eq('active', false)
+      await service.rpc('release_user_deletion', { target_user_id: parsed.data })
     }
     return { error: deleteError.message }
   }
