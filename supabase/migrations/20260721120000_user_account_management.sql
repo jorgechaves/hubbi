@@ -1,6 +1,14 @@
 -- Reserve a user deletion while serializing active-admin checks.
 -- The Auth deletion happens immediately after this transaction in the server action.
 
+create table if not exists private.user_deletion_reservations (
+  user_id uuid primary key references public.profiles(id) on delete cascade,
+  was_active boolean not null,
+  reserved_at timestamptz not null default now()
+);
+
+revoke all on table private.user_deletion_reservations from public;
+
 create or replace function public.reserve_user_deletion(
   target_user_id uuid,
   current_user_id uuid
@@ -14,6 +22,7 @@ declare
   target_role text;
   target_active boolean;
   active_admin_count bigint;
+  reserved_was_active boolean;
 begin
   if target_user_id = current_user_id then
     raise exception using message = 'Você não pode excluir a própria conta.';
@@ -39,6 +48,16 @@ begin
     return;
   end if;
 
+  select r.was_active
+    into reserved_was_active
+    from private.user_deletion_reservations r
+    where r.user_id = target_user_id
+    for update;
+
+  if found then
+    raise exception using message = 'Este usuário já está em processo de exclusão.';
+  end if;
+
   if target_role = 'admin' and target_active then
     select count(*)
       into active_admin_count
@@ -49,6 +68,9 @@ begin
       raise exception using message = 'Não é possível excluir o último administrador ativo.';
     end if;
   end if;
+
+  insert into private.user_deletion_reservations (user_id, was_active)
+    values (target_user_id, target_active);
 
   update public.profiles
     set active = false
@@ -67,16 +89,33 @@ language plpgsql
 security definer
 set search_path = ''
 as $$
+declare
+  reserved_was_active boolean;
 begin
   perform 1
     from public.portal_settings
     where public.portal_settings.id = 1
     for update;
 
-  update public.profiles
-    set active = true
-    where public.profiles.id = target_user_id
-      and public.profiles.active = false;
+  select r.was_active
+    into reserved_was_active
+    from private.user_deletion_reservations r
+    where r.user_id = target_user_id
+    for update;
+
+  if not found then
+    return;
+  end if;
+
+  delete from private.user_deletion_reservations
+    where user_id = target_user_id;
+
+  if reserved_was_active then
+    update public.profiles
+      set active = true
+      where public.profiles.id = target_user_id
+        and public.profiles.active = false;
+  end if;
 end;
 $$;
 
@@ -117,6 +156,14 @@ begin
 
   if not found then
     return;
+  end if;
+
+  if exists (
+    select 1
+      from private.user_deletion_reservations r
+      where r.user_id = target_user_id
+  ) then
+    raise exception using message = 'Este usuário está em processo de exclusão.';
   end if;
 
   if current_role = 'admin'
