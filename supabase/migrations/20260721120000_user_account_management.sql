@@ -83,11 +83,12 @@ $$;
 revoke all on function public.release_user_deletion(uuid) from public;
 grant execute on function public.release_user_deletion(uuid) to service_role;
 
-create or replace function public.update_user_profile_guarded(
+create or replace function public.update_user_profile_and_groups_guarded(
   target_user_id uuid,
   new_name text,
   new_role text,
-  new_active boolean
+  new_active boolean,
+  new_group_ids uuid[]
 )
 returns table (id uuid, role text, active boolean)
 language plpgsql
@@ -137,9 +138,18 @@ begin
         active = new_active
     where public.profiles.id = target_user_id;
 
+  delete from public.user_groups
+    where public.user_groups.user_id = target_user_id;
+
+  if coalesce(array_length(new_group_ids, 1), 0) > 0 then
+    insert into public.user_groups (user_id, group_id)
+      select target_user_id, groups.group_id
+      from unnest(new_group_ids) as groups(group_id);
+  end if;
+
   return query select target_user_id, new_role, new_active;
 end;
 $$;
 
-revoke all on function public.update_user_profile_guarded(uuid, text, text, boolean) from public;
-grant execute on function public.update_user_profile_guarded(uuid, text, text, boolean) to service_role;
+revoke all on function public.update_user_profile_and_groups_guarded(uuid, text, text, boolean, uuid[]) from public;
+grant execute on function public.update_user_profile_and_groups_guarded(uuid, text, text, boolean, uuid[]) to service_role;

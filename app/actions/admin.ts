@@ -104,23 +104,15 @@ export async function updateUser(userId: string, formData: FormData) {
   if ('error' in parsed) return { error: parsed.error }
   const { safeUserId, name, role, active, groupIds, temporaryPassword } = parsed.data
 
-  const { data: updatedProfile, error: profileError } = await service.rpc('update_user_profile_guarded', {
+  const { data: updatedProfile, error: profileError } = await service.rpc('update_user_profile_and_groups_guarded', {
     target_user_id: safeUserId,
     new_name: name,
     new_role: role,
     new_active: active,
+    new_group_ids: groupIds,
   })
   if (profileError) return { error: profileError.message }
   if (!updatedProfile?.length) return { error: 'Usuário não encontrado.' }
-
-  const { error: deleteGroupsError } = await service.from('user_groups').delete().eq('user_id', safeUserId)
-  if (deleteGroupsError) return { error: deleteGroupsError.message }
-  if (groupIds.length > 0) {
-    const { error: insertGroupsError } = await service.from('user_groups').insert(
-      groupIds.map(gid => ({ user_id: safeUserId, group_id: gid }))
-    )
-    if (insertGroupsError) return { error: insertGroupsError.message }
-  }
 
   if (temporaryPassword) {
     const { error: passwordError } = await service.auth.admin.updateUserById(safeUserId, {
@@ -156,7 +148,10 @@ export async function deleteUser(userId: string) {
   const { error: deleteError } = await service.auth.admin.deleteUser(parsed.data)
   if (deleteError) {
     if (wasActive) {
-      await service.rpc('release_user_deletion', { target_user_id: parsed.data })
+      const { error: releaseError } = await service.rpc('release_user_deletion', { target_user_id: parsed.data })
+      if (releaseError) {
+        return { error: 'A exclusão falhou e não foi possível restaurar o acesso do usuário. Tente novamente.' }
+      }
     }
     return { error: deleteError.message }
   }
