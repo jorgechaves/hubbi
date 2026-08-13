@@ -1,6 +1,8 @@
 -- Reserve a user deletion while serializing active-admin checks.
 -- The Auth deletion happens immediately after this transaction in the server action.
 
+create schema if not exists private;
+
 create table if not exists private.user_deletion_reservations (
   user_id uuid primary key references public.profiles(id) on delete cascade,
   was_active boolean not null,
