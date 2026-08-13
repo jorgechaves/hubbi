@@ -62,7 +62,22 @@ export function AuthShell({ portalName, logoUrl, children }: Props) {
         </section>
 
         <section className="flex items-center justify-center px-5 py-10 sm:px-10 lg:px-14">
-          <div className="w-full max-w-md">{children}</div>
+          <div className="w-full max-w-md">
+            <div className="mb-8 flex items-center gap-2.5 lg:hidden">
+              {logoUrl ? (
+                <Image src={logoUrl} alt="" width={32} height={32} className="h-8 w-8 rounded-md object-contain" />
+              ) : (
+                <span
+                  className="flex h-8 w-8 items-center justify-center rounded-md text-primary-foreground"
+                  style={{ background: 'var(--color-primary, #3a7d72)' }}
+                >
+                  <BarChart3 className="h-4 w-4" aria-hidden="true" />
+                </span>
+              )}
+              <span className="text-sm font-semibold tracking-tight text-foreground">{portalName}</span>
+            </div>
+            {children}
+          </div>
         </section>
       </div>
     </main>
