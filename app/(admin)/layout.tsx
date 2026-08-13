@@ -19,7 +19,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const settings = await getPortalSettings()
 
   return (
-    <AdminShell portalName={settings.name}>
+    <AdminShell portalName={settings.name} logoUrl={settings.logo_url}>
       {children}
     </AdminShell>
   )

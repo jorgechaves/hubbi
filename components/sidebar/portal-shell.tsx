@@ -39,6 +39,7 @@ export function PortalShell({ panels, portalName, logoUrl, isAdmin, children }: 
         logoUrl={logoUrl}
         isAdmin={isAdmin}
         onMenuToggle={() => setSidebarOpen(o => !o)}
+        contextLabel="Home"
       />
       <div className="flex flex-1 overflow-hidden">
         <Sidebar

@@ -6,28 +6,35 @@ import Image from 'next/image'
 import { logout } from '@/app/actions/auth'
 import { useTransition } from 'react'
 import { ThemeToggle } from '@/components/theme-toggle'
+import { ChevronRight, Grid2X2, UserCircle } from 'lucide-react'
 
 type Props = {
   portalName: string
   logoUrl: string | null
   isAdmin: boolean
   onMenuToggle: () => void
+  contextLabel?: string
 }
 
-export function Header({ portalName, logoUrl, isAdmin, onMenuToggle }: Props) {
+export function Header({ portalName, logoUrl, isAdmin, onMenuToggle, contextLabel = 'Home' }: Props) {
   const [isPending, startTransition] = useTransition()
 
   return (
-    <header className="h-14 flex items-center justify-between px-4 shrink-0 bg-card border-b border-border">
-      <div className="flex items-center gap-3">
+    <header className="relative z-40 flex h-14 shrink-0 items-center justify-between border-b border-border bg-card/95 px-3 backdrop-blur sm:px-5">
+      <div className="flex min-w-0 items-center gap-2.5">
         <button
           onClick={onMenuToggle}
-          className="md:hidden p-1.5 rounded text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+          className="flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring md:hidden"
+          aria-label="Abrir navegação"
         >
           <Menu className="h-5 w-5" />
         </button>
 
-        <Link href="/dashboard" className="flex items-center gap-2.5 group">
+        <span className="hidden h-8 w-8 items-center justify-center rounded-md text-muted-foreground sm:flex" aria-hidden="true">
+          <Grid2X2 className="h-4 w-4" />
+        </span>
+
+        <Link href="/dashboard" className="group flex min-w-0 items-center gap-2.5">
           {logoUrl ? (
             <Image
               src={logoUrl}
@@ -38,38 +45,51 @@ export function Header({ portalName, logoUrl, isAdmin, onMenuToggle }: Props) {
             />
           ) : (
             <span
-              className="h-6 w-6 rounded flex items-center justify-center text-[10px] font-mono-brand font-bold text-[#09090f]"
-              style={{ background: 'var(--color-primary, #0047d4)' }}
+              className="flex h-7 w-7 items-center justify-center rounded-md text-[10px] font-bold text-primary-foreground"
+              style={{ background: 'var(--color-primary, #3a7d72)' }}
             >
               {portalName.charAt(0).toUpperCase()}
             </span>
           )}
-          <span className="font-mono-brand text-xs font-bold tracking-[0.15em] uppercase text-foreground/80 group-hover:text-foreground transition-colors">
+          <span className="truncate text-sm font-semibold tracking-tight text-foreground transition-colors group-hover:text-primary">
             {portalName}
           </span>
         </Link>
+
+        <ChevronRight className="hidden h-4 w-4 shrink-0 text-muted-foreground/50 sm:block" aria-hidden="true" />
+        <Link href="/dashboard" className="hidden text-sm text-muted-foreground transition-colors hover:text-foreground sm:block">
+          {contextLabel}
+        </Link>
       </div>
 
-      <div className="flex items-center gap-2">
-        {/* Theme toggle */}
+      <div className="flex shrink-0 items-center gap-1.5">
         <ThemeToggle />
 
-        <div className="w-px h-5 bg-border mx-1" />
+        <div className="mx-1 hidden h-5 w-px bg-border sm:block" />
 
         {isAdmin && (
           <Link
             href="/admin/users"
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all duration-150"
+            className="hidden items-center gap-1.5 rounded-md px-2.5 py-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:flex"
           >
             <ShieldCheck className="h-3.5 w-3.5" />
             Admin
           </Link>
         )}
 
+        <Link
+          href="/account"
+          className="flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          aria-label="Minha conta"
+          title="Minha conta"
+        >
+          <UserCircle className="h-5 w-5" />
+        </Link>
+
         <button
           disabled={isPending}
           onClick={() => startTransition(() => logout())}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded text-xs font-medium text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all duration-150 disabled:opacity-50"
+          className="hidden items-center gap-1.5 rounded-md px-2.5 py-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50 sm:flex"
         >
           <LogOut className="h-3.5 w-3.5" />
           Sair
