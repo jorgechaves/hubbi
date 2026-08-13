@@ -9,12 +9,8 @@ export default async function ResetPasswordPage({
   const { code } = await searchParams
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="w-full max-w-sm space-y-6 bg-card p-8 rounded-xl border border-border">
-        <Suspense>
-          <ResetPasswordClient code={code} />
-        </Suspense>
-      </div>
-    </div>
+    <Suspense fallback={<div className="h-48 rounded-lg bg-muted animate-pulse" />}>
+      <ResetPasswordClient code={code} />
+    </Suspense>
   )
 }

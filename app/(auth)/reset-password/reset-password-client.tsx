@@ -49,27 +49,29 @@ export function ResetPasswordClient({ code }: { code?: string }) {
 
   if (status === 'loading') {
     return (
-      <div className="py-4 flex flex-col items-center gap-4">
-        <div className="space-y-1 text-center">
-          <h1 className="text-xl font-semibold">Nova senha</h1>
+      <div className="flex flex-col items-center gap-4 py-4 text-center">
+        <div className="space-y-2">
+          <p className="text-[10px] font-mono-brand uppercase tracking-[0.18em] text-muted-foreground">Segurança</p>
+          <h1 className="text-3xl font-semibold tracking-tight text-foreground">Nova senha</h1>
           <p className="text-sm text-muted-foreground">Verificando link...</p>
         </div>
-        <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+        <Loader2 className="h-5 w-5 animate-spin text-primary" aria-hidden="true" />
       </div>
     )
   }
 
   if (status === 'error') {
     return (
-      <div className="space-y-4">
-        <div className="space-y-1 text-center">
-          <h1 className="text-xl font-semibold">Nova senha</h1>
+      <div className="space-y-6">
+        <div className="space-y-2">
+          <p className="text-[10px] font-mono-brand uppercase tracking-[0.18em] text-muted-foreground">Segurança</p>
+          <h1 className="text-3xl font-semibold tracking-tight text-foreground">Nova senha</h1>
         </div>
-        <p className="text-sm text-destructive bg-destructive/10 px-3 py-2 rounded-md text-center">
+        <p className="rounded-lg border border-destructive/20 bg-destructive/10 px-3 py-3 text-center text-sm leading-6 text-destructive">
           {exchangeError}
         </p>
         <p className="text-center text-sm">
-          <Link href="/forgot-password" className="text-primary hover:underline">
+          <Link href="/forgot-password" className="font-medium text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
             Solicitar novo link
           </Link>
         </p>
@@ -78,36 +80,37 @@ export function ResetPasswordClient({ code }: { code?: string }) {
   }
 
   return (
-    <>
-      <div className="space-y-1 text-center">
-        <h1 className="text-xl font-semibold">Nova senha</h1>
-        <p className="text-sm text-muted-foreground">Defina sua nova senha de acesso</p>
+    <div className="space-y-7">
+      <div className="space-y-2">
+        <p className="text-[10px] font-mono-brand uppercase tracking-[0.18em] text-muted-foreground">Segurança</p>
+        <h1 className="text-3xl font-semibold tracking-tight text-foreground">Nova senha</h1>
+        <p className="text-sm leading-6 text-muted-foreground">Defina sua nova senha de acesso.</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="password">Nova senha</Label>
-          <Input id="password" name="password" type="password" minLength={8} required />
+          <Input id="password" name="password" type="password" minLength={8} autoComplete="new-password" required className="h-11 bg-background" />
         </div>
         <div className="space-y-2">
           <Label htmlFor="confirm">Confirmar senha</Label>
-          <Input id="confirm" name="confirm" type="password" minLength={8} required />
+          <Input id="confirm" name="confirm" type="password" minLength={8} autoComplete="new-password" required className="h-11 bg-background" />
         </div>
 
         {formError && (
-          <p className="text-sm text-destructive bg-destructive/10 px-3 py-2 rounded-md">{formError}</p>
+          <p className="rounded-lg border border-destructive/20 bg-destructive/10 px-3 py-2.5 text-sm text-destructive">{formError}</p>
         )}
 
-        <Button type="submit" className="w-full" disabled={isPending}>
+        <Button type="submit" className="h-11 w-full" disabled={isPending}>
           {isPending ? 'Salvando...' : 'Redefinir senha'}
         </Button>
       </form>
 
       <p className="text-center text-sm">
-        <Link href="/login" className="text-muted-foreground hover:underline">
+        <Link href="/login" className="text-muted-foreground transition-colors hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
           Voltar ao login
         </Link>
       </p>
-    </>
+    </div>
   )
 }
