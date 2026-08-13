@@ -35,38 +35,38 @@
    LIGHT MODE (default)
 ───────────────────────────────────────────────────────────── */
 :root {
-  --background:         #f4f4f8;
-  --foreground:         #0d0d16;
+  --background:         #f6f7f8;
+  --foreground:         #252929;
   --card:               #ffffff;
-  --card-foreground:    #0d0d16;
+  --card-foreground:    #252929;
   --popover:            #ffffff;
-  --popover-foreground: #0d0d16;
-  --primary:            #0047d4;
+  --popover-foreground: #252929;
+  --primary:            #3a7d72;
   --primary-foreground: #ffffff;
-  --secondary:          #e8e8f2;
-  --secondary-foreground:#0d0d16;
-  --muted:              #ecedf4;
-  --muted-foreground:   #5c5c7a;
-  --accent:             #e8e8f2;
-  --accent-foreground:  #0d0d16;
+  --secondary:          #e8eeee;
+  --secondary-foreground:#252929;
+  --muted:              #eff2f2;
+  --muted-foreground:   #667070;
+  --accent:             #e2eeeb;
+  --accent-foreground:  #285d54;
   --destructive:        #dc2626;
-  --border:             rgba(0,0,0,0.09);
-  --input:              rgba(0,0,0,0.06);
-  --ring:               rgba(0,71,212,0.35);
+  --border:             rgba(31,45,45,0.12);
+  --input:              rgba(31,45,45,0.16);
+  --ring:               rgba(58,125,114,0.35);
   --radius:             0.375rem;
 
   /* Sidebar light */
   --sidebar:                   #ffffff;
   --sidebar-foreground:        #0d0d16;
-  --sidebar-primary:           #0047d4;
+  --sidebar-primary:           #3a7d72;
   --sidebar-primary-foreground:#ffffff;
-  --sidebar-accent:            rgba(0,71,212,0.07);
-  --sidebar-accent-foreground: #0047d4;
-  --sidebar-border:            rgba(0,0,0,0.07);
-  --sidebar-ring:              rgba(0,71,212,0.3);
+  --sidebar-accent:            rgba(58,125,114,0.09);
+  --sidebar-accent-foreground: #285d54;
+  --sidebar-border:            rgba(31,45,45,0.09);
+  --sidebar-ring:              rgba(58,125,114,0.3);
 
   /* Portal accent — overridable by portal_settings */
-  --color-primary:             #0047d4;
+  --color-primary:             #3a7d72;
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -124,7 +124,7 @@
 
 /* ─── Dot grid ────────────────────────────────────────────── */
 .bg-grid-light {
-  background-image: radial-gradient(circle, rgba(0,0,0,0.05) 1px, transparent 1px);
+  background-image: radial-gradient(circle, rgba(37,41,41,0.06) 1px, transparent 1px);
   background-size: 24px 24px;
 }
 .bg-grid-dark {
@@ -132,7 +132,7 @@
   background-size: 24px 24px;
 }
 .dark .bg-grid { background-image: radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px); background-size: 24px 24px; }
-.bg-grid      { background-image: radial-gradient(circle, rgba(0,0,0,0.04) 1px, transparent 1px); background-size: 24px 24px; }
+.bg-grid      { background-image: radial-gradient(circle, rgba(37,41,41,0.04) 1px, transparent 1px); background-size: 24px 24px; }
 
 /* ─── Scrollbar ───────────────────────────────────────────── */
 ::-webkit-scrollbar        { width: 5px; height: 5px; }
