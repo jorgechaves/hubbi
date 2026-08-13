@@ -8,6 +8,7 @@ import { Plus, LayoutDashboard } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { togglePanelStatus } from '@/app/actions/admin'
 import { AdminListFilters } from '@/components/admin/list-filters'
+import { AdminPageHeader } from '@/components/admin/page-header'
 import { parseSearch, parseStatusFilter } from '@/lib/admin/list-query'
 import { toast } from 'sonner'
 
@@ -43,30 +44,30 @@ export default function PanelsPage() {
   }
 
   return (
-    <div className="p-8 space-y-6 animate-fade-up">
-      <div className="flex items-center justify-between">
-        <div className="space-y-0.5">
-          <p className="text-[10px] font-mono-brand uppercase tracking-[0.2em] text-muted-foreground/50">Admin</p>
-          <h1 className="text-xl font-semibold text-foreground flex items-center gap-2">
-            <LayoutDashboard className="h-5 w-5 text-muted-foreground" />
-            Painéis
-          </h1>
-        </div>
-        <Button asChild size="sm">
-          <Link href="/admin/panels/new">
-            <Plus className="h-4 w-4 mr-1" />Novo painel
-          </Link>
-        </Button>
-      </div>
+    <div className="min-h-full p-4 sm:p-6 lg:p-8 animate-fade-up">
+      <div className="mx-auto max-w-[1440px] space-y-6">
+        <AdminPageHeader
+          title="Painéis"
+          description="Cadastre relatórios e controle os acessos dos grupos."
+          icon={LayoutDashboard}
+          action={(
+            <Button asChild size="sm">
+              <Link href="/admin/panels/new">
+                <Plus className="h-4 w-4" aria-hidden="true" />
+                Novo painel
+              </Link>
+            </Button>
+          )}
+        />
 
-      <AdminListFilters search={search} filters={[
-        { name: 'status', label: 'Status', value: status === null ? '' : status ? 'active' : 'inactive', options: [{ value: '', label: 'Todos' }, { value: 'active', label: 'Ativo' }, { value: 'inactive', label: 'Inativo' }] },
-      ]} />
+        <AdminListFilters search={search} filters={[
+          { name: 'status', label: 'Status', value: status === null ? '' : status ? 'active' : 'inactive', options: [{ value: '', label: 'Todos' }, { value: 'active', label: 'Ativo' }, { value: 'inactive', label: 'Inativo' }] },
+        ]} />
 
-      {error && <p className="text-sm text-destructive bg-destructive/10 px-3 py-2 rounded-md">{error}</p>}
+        {error && <p className="rounded-lg border border-destructive/20 bg-destructive/10 px-3 py-2.5 text-sm text-destructive">{error}</p>}
 
-      <div className="rounded-lg border border-border overflow-hidden bg-card">
-        <table className="w-full text-sm">
+        <div className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+        <table className="w-full min-w-[720px] text-sm">
           <thead>
             <tr className="border-b border-border">
               {['Nome', 'Descrição', 'Status', ''].map(h => (
@@ -110,6 +111,7 @@ export default function PanelsPage() {
         {panels.filter(p => (!search || `${p.name} ${p.description ?? ''}`.toLocaleLowerCase('pt-BR').includes(search.toLocaleLowerCase('pt-BR'))) && (status === null || p.active === status)).length === 0 && (
           <div className="py-12 text-center text-sm text-muted-foreground/50">{search || status !== null ? 'Nenhum resultado para os filtros aplicados.' : 'Nenhum painel cadastrado.'}</div>
         )}
+        </div>
       </div>
     </div>
   )

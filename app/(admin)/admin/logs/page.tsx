@@ -1,5 +1,6 @@
+import { FileText } from 'lucide-react'
 import { createClient } from '@supabase/supabase-js'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { AdminPageHeader } from '@/components/admin/page-header'
 
 export default async function LogsPage({
   searchParams,
@@ -10,7 +11,7 @@ export default async function LogsPage({
   const currentPage = Math.max(1, parseInt(page ?? '1', 10))
   const pageSize = 50
   const from = (currentPage - 1) * pageSize
-  const to   = from + pageSize - 1
+  const to = from + pageSize - 1
 
   const service = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -31,53 +32,70 @@ export default async function LogsPage({
   const totalPages = Math.ceil((count ?? 0) / pageSize)
 
   return (
-    <div className="p-6 space-y-4">
-      <h1 className="text-xl font-semibold">Logs de acesso</h1>
-      <p className="text-sm text-muted-foreground">{count ?? 0} registros no total</p>
+    <div className="min-h-full p-4 sm:p-6 lg:p-8 animate-fade-up">
+      <div className="mx-auto max-w-[1440px] space-y-6">
+        <AdminPageHeader
+          title="Logs de acesso"
+          description={`${count ?? 0} registros de auditoria no total.`}
+          icon={FileText}
+        />
 
-      <div className="bg-card rounded-lg border border-border overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Usuário</TableHead>
-              <TableHead>Painel</TableHead>
-              <TableHead>Data / Hora</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {logs?.map(log => {
-              const user  = log.user  as unknown as { name: string; email: string } | null
-              const panel = log.panel as unknown as { name: string } | null
-              return (
-                <TableRow key={log.id}>
-                  <TableCell>
-                    <div className="text-sm">{user?.name || '—'}</div>
-                    <div className="text-xs text-muted-foreground/60">{user?.email}</div>
-                  </TableCell>
-                  <TableCell>{panel?.name || '—'}</TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {new Date(log.accessed_at).toLocaleString('pt-BR')}
-                  </TableCell>
-                </TableRow>
-              )
-            })}
-          </TableBody>
-        </Table>
+        <section className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+          <div className="border-b border-border px-5 py-4">
+            <p className="text-[10px] font-mono-brand uppercase tracking-[0.18em] text-muted-foreground">Auditoria</p>
+            <p className="mt-1 text-sm text-muted-foreground">Acompanhe os acessos aos painéis do portal.</p>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[680px] text-sm">
+              <thead>
+                <tr className="border-b border-border text-left">
+                  <th className="px-5 py-3 text-[10px] font-mono-brand uppercase tracking-[0.16em] text-muted-foreground">Usuário</th>
+                  <th className="px-5 py-3 text-[10px] font-mono-brand uppercase tracking-[0.16em] text-muted-foreground">Painel</th>
+                  <th className="px-5 py-3 text-[10px] font-mono-brand uppercase tracking-[0.16em] text-muted-foreground">Data / Hora</th>
+                </tr>
+              </thead>
+              <tbody>
+                {logs?.map(log => {
+                  const user = log.user as unknown as { name: string; email: string } | null
+                  const panel = log.panel as unknown as { name: string } | null
+                  return (
+                    <tr key={log.id} className="border-t border-border transition-colors first:border-t-0 hover:bg-muted/50">
+                      <td className="px-5 py-3.5">
+                        <div className="font-medium text-foreground">{user?.name || '—'}</div>
+                        <div className="mt-0.5 text-xs text-muted-foreground">{user?.email}</div>
+                      </td>
+                      <td className="px-5 py-3.5 text-foreground">{panel?.name || '—'}</td>
+                      <td className="px-5 py-3.5 text-sm text-muted-foreground">
+                        {new Date(log.accessed_at).toLocaleString('pt-BR')}
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+            {(!logs || logs.length === 0) ? (
+              <div className="border-t border-border px-5 py-12 text-center text-sm text-muted-foreground">
+                Nenhum acesso registrado.
+              </div>
+            ) : null}
+          </div>
+        </section>
+
+        {totalPages > 1 ? (
+          <nav className="flex flex-wrap gap-2" aria-label="Paginação dos logs">
+            {Array.from({ length: totalPages }, (_, index) => index + 1).map(pageNumber => (
+              <a
+                key={pageNumber}
+                href={`?page=${pageNumber}`}
+                aria-current={pageNumber === currentPage ? 'page' : undefined}
+                className={`inline-flex h-8 min-w-8 items-center justify-center rounded-md border px-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${pageNumber === currentPage ? 'border-primary bg-primary text-primary-foreground' : 'border-border bg-card text-muted-foreground hover:bg-muted hover:text-foreground'}`}
+              >
+                {pageNumber}
+              </a>
+            ))}
+          </nav>
+        ) : null}
       </div>
-
-      {totalPages > 1 && (
-        <div className="flex gap-2 text-sm">
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
-            <a
-              key={p}
-              href={`?page=${p}`}
-              className={`px-3 py-1 rounded border border-border transition-colors ${p === currentPage ? 'bg-foreground text-background border-foreground' : 'text-muted-foreground hover:bg-muted'}`}
-            >
-              {p}
-            </a>
-          ))}
-        </div>
-      )}
     </div>
   )
 }

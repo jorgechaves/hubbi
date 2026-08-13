@@ -2,14 +2,13 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { createPanel } from '@/app/actions/admin'
-import { ArrowLeft } from 'lucide-react'
 import { toast } from 'sonner'
+import { AdminPageHeader } from '@/components/admin/page-header'
 
 export default function NewPanelPage() {
   const router = useRouter()
@@ -28,15 +27,15 @@ export default function NewPanelPage() {
   }
 
   return (
-    <div className="p-6 max-w-lg space-y-6">
-      <div className="flex items-center gap-3">
-        <Button variant="ghost" size="sm" asChild>
-          <Link href="/admin/panels"><ArrowLeft className="h-4 w-4" /></Link>
-        </Button>
-        <h1 className="text-xl font-semibold">Novo painel</h1>
-      </div>
+    <div className="min-h-full p-4 sm:p-6 lg:p-8">
+      <div className="mx-auto max-w-3xl space-y-6">
+        <AdminPageHeader
+          title="Novo painel"
+          description="Cadastre um relatório e defina seu status de publicação."
+          backHref="/admin/panels"
+        />
 
-      <form onSubmit={handleSubmit} className="bg-card rounded-lg border border-border p-6 space-y-4">
+      <form onSubmit={handleSubmit} className="max-w-xl space-y-5 rounded-xl border border-border bg-card p-5 shadow-sm sm:p-6">
         <div className="space-y-2">
           <Label htmlFor="name">Nome</Label>
           <Input id="name" name="name" required />
@@ -64,15 +63,16 @@ export default function NewPanelPage() {
           </Select>
         </div>
 
-        {error && <p className="text-sm text-destructive bg-destructive/10 px-3 py-2 rounded-md">{error}</p>}
+        {error && <p className="rounded-lg border border-destructive/20 bg-destructive/10 px-3 py-2.5 text-sm text-destructive">{error}</p>}
 
-        <div className="flex gap-2 pt-2">
+        <div className="flex flex-wrap justify-end gap-2 border-t border-border pt-4">
           <Button type="submit" disabled={isPending}>
             {isPending ? 'Criando...' : 'Criar painel'}
           </Button>
           <Button type="button" variant="outline" onClick={() => router.back()}>Cancelar</Button>
         </div>
       </form>
+      </div>
     </div>
   )
 }

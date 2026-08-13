@@ -2,15 +2,15 @@
 
 import { useState, useEffect, useTransition } from 'react'
 import { useRouter, useParams } from 'next/navigation'
-import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { createClient } from '@/lib/supabase/client'
 import { updatePanel, updatePanelGroups } from '@/app/actions/admin'
-import { ArrowLeft, ExternalLink } from 'lucide-react'
+import { ExternalLink } from 'lucide-react'
 import { toast } from 'sonner'
+import { AdminPageHeader } from '@/components/admin/page-header'
 
 type Panel = { id: string; name: string; url: string; description: string | null; icon: string | null; active: boolean }
 type Group = { id: string; name: string }
@@ -60,19 +60,19 @@ export default function EditPanelPage() {
     })
   }
 
-  if (!panel) return <div className="p-6 text-sm text-muted-foreground">Carregando...</div>
+  if (!panel) return <div className="p-4 text-sm text-muted-foreground sm:p-6">Carregando...</div>
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex items-center gap-3">
-        <Button variant="ghost" size="sm" asChild>
-          <Link href="/admin/panels"><ArrowLeft className="h-4 w-4" /></Link>
-        </Button>
-        <h1 className="text-xl font-semibold">Editar painel</h1>
-      </div>
+    <div className="min-h-full p-4 sm:p-6 lg:p-8">
+      <div className="mx-auto max-w-[1440px] space-y-6">
+        <AdminPageHeader
+          title="Editar painel"
+          description="Atualize os dados do relatório, pré-visualize a URL e gerencie seus grupos."
+          backHref="/admin/panels"
+        />
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <form onSubmit={handleSubmit} className="bg-card rounded-lg border border-border p-6 space-y-4">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <form onSubmit={handleSubmit} className="space-y-5 rounded-xl border border-border bg-card p-5 shadow-sm sm:p-6">
           <div className="space-y-2">
             <Label htmlFor="name">Nome</Label>
             <Input id="name" name="name" defaultValue={panel.name} required />
@@ -106,7 +106,7 @@ export default function EditPanelPage() {
           </div>
           <div className="space-y-2">
             <Label>Grupos com acesso</Label>
-            <div className="border rounded-md divide-y max-h-40 overflow-y-auto">
+            <div className="max-h-40 divide-y divide-border overflow-y-auto rounded-md border border-border bg-background">
               {allGroups.map(g => (
                 <label key={g.id} className="flex items-center gap-2 px-3 py-2 text-sm cursor-pointer hover:bg-muted">
                   <input
@@ -124,23 +124,27 @@ export default function EditPanelPage() {
             </div>
           </div>
 
-          {error && <p className="text-sm text-destructive bg-destructive/10 px-3 py-2 rounded-md">{error}</p>}
+          {error && <p className="rounded-lg border border-destructive/20 bg-destructive/10 px-3 py-2.5 text-sm text-destructive">{error}</p>}
 
-          <div className="flex gap-2 pt-2">
+          <div className="flex flex-wrap justify-end gap-2 border-t border-border pt-4">
             <Button type="submit" disabled={isPending}>{isPending ? 'Salvando...' : 'Salvar'}</Button>
             <Button type="button" variant="outline" onClick={() => router.back()}>Cancelar</Button>
           </div>
         </form>
 
         {previewUrl && (
-          <div className="bg-card rounded-lg border border-border overflow-hidden flex flex-col">
-            <div className="px-4 py-3 border-b flex items-center justify-between">
-              <p className="text-sm font-medium">Prévia</p>
+          <div className="flex min-h-96 flex-col overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+            <div className="flex items-center justify-between border-b border-border px-4 py-3">
+              <div>
+                <p className="text-[10px] font-mono-brand uppercase tracking-[0.16em] text-muted-foreground">Visualização</p>
+                <p className="mt-1 text-sm font-medium text-foreground">Prévia do painel</p>
+              </div>
               <Button variant="ghost" size="sm" onClick={() => setPreviewUrl(null)}>Fechar</Button>
             </div>
-            <iframe src={previewUrl} title="Prévia do painel" className="flex-1 border-0 min-h-96" />
+            <iframe src={previewUrl} title="Prévia do painel" className="min-h-96 flex-1 border-0 bg-white" />
           </div>
         )}
+      </div>
       </div>
     </div>
   )

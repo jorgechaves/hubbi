@@ -1,9 +1,11 @@
 'use client'
 
 import { useState, useEffect, useTransition } from 'react'
+import { Settings2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { AdminPageHeader } from '@/components/admin/page-header'
 import { createClient } from '@/lib/supabase/client'
 import { updatePortalSettings } from '@/app/actions/admin'
 import { toast } from 'sonner'
@@ -30,13 +32,18 @@ export default function SettingsPage() {
     })
   }
 
-  if (!settings) return <div className="p-6 text-sm text-muted-foreground">Carregando...</div>
+  if (!settings) return <div className="p-4 text-sm text-muted-foreground sm:p-6">Carregando...</div>
 
   return (
-    <div className="p-6 max-w-lg space-y-6">
-      <h1 className="text-xl font-semibold">Configurações do portal</h1>
+    <div className="min-h-full p-4 sm:p-6 lg:p-8 animate-fade-up">
+      <div className="mx-auto max-w-3xl space-y-6">
+        <AdminPageHeader
+          title="Configurações do portal"
+          description="Personalize o nome, logo e cor principal usados no BI Hub."
+          icon={Settings2}
+        />
 
-      <form onSubmit={handleSubmit} className="bg-card rounded-lg border border-border p-6 space-y-4">
+      <form onSubmit={handleSubmit} className="max-w-xl space-y-5 rounded-xl border border-border bg-card p-5 shadow-sm sm:p-6">
         <div className="space-y-2">
           <Label htmlFor="name">Nome do portal</Label>
           <Input id="name" name="name" defaultValue={settings.name} required />
@@ -51,7 +58,7 @@ export default function SettingsPage() {
             defaultValue={settings.logo_url ?? ''}
             placeholder="https://empresa.com/logo.png"
           />
-          <p className="text-xs text-muted-foreground/60">Deixe em branco para exibir o nome em texto</p>
+          <p className="text-xs text-muted-foreground">Deixe em branco para exibir o nome em texto.</p>
         </div>
 
         <div className="space-y-2">
@@ -74,6 +81,7 @@ export default function SettingsPage() {
           </Button>
         </div>
       </form>
+      </div>
     </div>
   )
 }

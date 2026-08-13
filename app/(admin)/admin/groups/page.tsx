@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Plus, Users } from 'lucide-react'
 import { DeleteGroupButton } from './delete-group-button'
 import { AdminListFilters } from '@/components/admin/list-filters'
+import { AdminPageHeader } from '@/components/admin/page-header'
 import { parseSearch, toSearchPattern } from '@/lib/admin/list-query'
 
 export default async function GroupsPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
@@ -31,26 +32,26 @@ export default async function GroupsPage({ searchParams }: { searchParams: Promi
     panelCounts?.filter(r => r.group_id === gid).length ?? 0
 
   return (
-    <div className="p-8 space-y-6 animate-fade-up">
-      <div className="flex items-center justify-between">
-        <div className="space-y-0.5">
-          <p className="text-[10px] font-mono-brand uppercase tracking-[0.2em] text-muted-foreground/50">Admin</p>
-          <h1 className="text-xl font-semibold text-foreground flex items-center gap-2">
-            <Users className="h-5 w-5 text-muted-foreground" />
-            Grupos
-          </h1>
-        </div>
-        <Button asChild size="sm">
-          <Link href="/admin/groups/new">
-            <Plus className="h-4 w-4 mr-1" />Novo grupo
-          </Link>
-        </Button>
-      </div>
+    <div className="min-h-full p-4 sm:p-6 lg:p-8 animate-fade-up">
+      <div className="mx-auto max-w-[1440px] space-y-6">
+        <AdminPageHeader
+          title="Grupos"
+          description="Organize usuários e defina quais painéis cada equipe pode acessar."
+          icon={Users}
+          action={(
+            <Button asChild size="sm">
+              <Link href="/admin/groups/new">
+                <Plus className="h-4 w-4" aria-hidden="true" />
+                Novo grupo
+              </Link>
+            </Button>
+          )}
+        />
 
-      <AdminListFilters search={search} filters={[]} />
+        <AdminListFilters search={search} filters={[]} />
 
-      <div className="rounded-lg border border-border overflow-hidden bg-card">
-        <table className="w-full text-sm">
+        <div className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+        <table className="w-full min-w-[720px] text-sm">
           <thead>
             <tr className="border-b border-border">
               {['Nome', 'Descrição', 'Usuários', 'Painéis', ''].map(h => (
@@ -87,6 +88,7 @@ export default async function GroupsPage({ searchParams }: { searchParams: Promi
         {(!groups || groups.length === 0) && (
           <div className="py-12 text-center text-sm text-muted-foreground/50">{search ? 'Nenhum resultado para os filtros aplicados.' : 'Nenhum grupo cadastrado.'}</div>
         )}
+        </div>
       </div>
     </div>
   )

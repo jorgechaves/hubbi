@@ -3,16 +3,16 @@
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { use } from 'react'
-import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { updateUser } from '@/app/actions/admin'
-import { ArrowLeft, KeyRound } from 'lucide-react'
+import { KeyRound } from 'lucide-react'
 import { toast } from 'sonner'
 import { createClient } from '@/lib/supabase/client'
 import { useEffect } from 'react'
+import { AdminPageHeader } from '@/components/admin/page-header'
 
 type Profile = { id: string; name: string; email: string; role: string; active: boolean }
 type Group   = { id: string; name: string }
@@ -55,21 +55,21 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
     })
   }
 
-  if (!profile) return <div className="p-6 text-sm text-muted-foreground">Carregando...</div>
+  if (!profile) return <div className="p-4 text-sm text-muted-foreground sm:p-6">Carregando...</div>
 
   return (
-    <div className="p-6 max-w-lg space-y-6">
-      <div className="flex items-center gap-3">
-        <Button variant="ghost" size="sm" asChild>
-          <Link href="/admin/users"><ArrowLeft className="h-4 w-4" /></Link>
-        </Button>
-        <h1 className="text-xl font-semibold">Editar usuário</h1>
-      </div>
+    <div className="min-h-full p-4 sm:p-6 lg:p-8">
+      <div className="mx-auto max-w-3xl space-y-6">
+        <AdminPageHeader
+          title="Editar usuário"
+          description="Atualize os dados, perfil, grupos e status de acesso."
+          backHref="/admin/users"
+        />
 
-      <form onSubmit={handleSubmit} className="bg-card rounded-lg border border-border p-6 space-y-4">
+      <form onSubmit={handleSubmit} className="max-w-xl space-y-5 rounded-xl border border-border bg-card p-5 shadow-sm sm:p-6">
         <div className="space-y-2">
           <Label>Email</Label>
-          <Input value={profile.email} disabled className="bg-muted/50" />
+          <Input value={profile.email} disabled className="bg-muted" />
         </div>
         <div className="space-y-2">
           <Label htmlFor="name">Nome</Label>
@@ -97,7 +97,7 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
         </div>
         <div className="space-y-2">
           <Label>Grupos</Label>
-          <div className="space-y-1 max-h-40 overflow-y-auto border rounded-md p-3">
+          <div className="max-h-40 space-y-1 overflow-y-auto rounded-md border border-border bg-background p-3">
             {groups.map(g => (
               <label key={g.id} className="flex items-center gap-2 text-sm cursor-pointer">
                 <input
@@ -116,7 +116,7 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
           </div>
         </div>
 
-        <div className="rounded-lg border border-border p-3 space-y-3">
+        <div className="space-y-3 rounded-lg border border-border bg-background/60 p-3">
           <button
             type="button"
             onClick={() => setShowPasswordReset(value => !value)}
@@ -138,15 +138,16 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
           </>}
         </div>
 
-        {error && <p className="text-sm text-destructive bg-destructive/10 px-3 py-2 rounded-md">{error}</p>}
+        {error && <p className="rounded-lg border border-destructive/20 bg-destructive/10 px-3 py-2.5 text-sm text-destructive">{error}</p>}
 
-        <div className="flex gap-2 pt-2">
+        <div className="flex flex-wrap justify-end gap-2 border-t border-border pt-4">
           <Button type="submit" disabled={isPending}>
             {isPending ? 'Salvando...' : 'Salvar'}
           </Button>
           <Button type="button" variant="outline" onClick={() => router.back()}>Cancelar</Button>
         </div>
       </form>
+      </div>
     </div>
   )
 }

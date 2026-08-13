@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { createClient as createServiceClient } from '@supabase/supabase-js'
 import { Plus, Users } from 'lucide-react'
 import { AdminListFilters } from '@/components/admin/list-filters'
+import { AdminPageHeader } from '@/components/admin/page-header'
 import { DeleteUserButton } from './delete-user-button'
 import { parseRoleFilter, parseSearch, parseStatusFilter, toSearchPattern } from '@/lib/admin/list-query'
 
@@ -26,32 +27,30 @@ export default async function UsersPage({ searchParams }: { searchParams: Promis
   const { data: profiles } = await query
 
   return (
-    <div className="p-8 space-y-6 animate-fade-up">
-      <div className="flex items-center justify-between">
-        <div className="space-y-0.5">
-          <p className="text-[10px] font-mono-brand uppercase tracking-[0.2em] text-muted-foreground/50">Admin</p>
-          <h1 className="text-xl font-semibold text-foreground flex items-center gap-2">
-            <Users className="h-5 w-5 text-muted-foreground" />
-            Usuários
-          </h1>
-        </div>
-        <Link
-          href="/admin/users/new"
-          className="flex items-center gap-1.5 px-3 py-2 rounded-md text-sm font-medium transition-all duration-150 text-background"
-          style={{ background: 'var(--color-primary, #0047d4)' }}
-        >
-          <Plus className="h-4 w-4" />
-          Novo usuário
-        </Link>
-      </div>
+    <div className="min-h-full p-4 sm:p-6 lg:p-8 animate-fade-up">
+      <div className="mx-auto max-w-[1440px] space-y-6">
+        <AdminPageHeader
+          title="Usuários"
+          description="Gerencie acessos, perfis e status das contas do portal."
+          icon={Users}
+          action={(
+            <Link
+              href="/admin/users/new"
+              className="inline-flex h-9 items-center gap-1.5 rounded-md bg-primary px-3 text-sm font-medium text-primary-foreground shadow-sm transition-colors hover:bg-primary/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <Plus className="h-4 w-4" aria-hidden="true" />
+              Novo usuário
+            </Link>
+          )}
+        />
 
-      <AdminListFilters search={search} filters={[
-        { name: 'role', label: 'Função', value: role ?? '', options: [{ value: '', label: 'Todas' }, { value: 'admin', label: 'Admin' }, { value: 'user', label: 'Usuário' }] },
-        { name: 'status', label: 'Status', value: status === null ? '' : status ? 'active' : 'inactive', options: [{ value: '', label: 'Todos' }, { value: 'active', label: 'Ativo' }, { value: 'inactive', label: 'Inativo' }] },
-      ]} />
+        <AdminListFilters search={search} filters={[
+          { name: 'role', label: 'Função', value: role ?? '', options: [{ value: '', label: 'Todas' }, { value: 'admin', label: 'Admin' }, { value: 'user', label: 'Usuário' }] },
+          { name: 'status', label: 'Status', value: status === null ? '' : status ? 'active' : 'inactive', options: [{ value: '', label: 'Todos' }, { value: 'active', label: 'Ativo' }, { value: 'inactive', label: 'Inativo' }] },
+        ]} />
 
-      <div className="rounded-lg border border-border overflow-hidden bg-card">
-        <table className="w-full text-sm">
+        <div className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+        <table className="w-full min-w-[720px] text-sm">
           <thead>
             <tr className="border-b border-border">
               {['Nome', 'Email', 'Role', 'Status', ''].map(h => (
@@ -103,6 +102,7 @@ export default async function UsersPage({ searchParams }: { searchParams: Promis
         {(!profiles || profiles.length === 0) && (
           <div className="py-12 text-center text-sm text-muted-foreground/50">{search || role || status !== null ? 'Nenhum resultado para os filtros aplicados.' : 'Nenhum usuário cadastrado.'}</div>
         )}
+        </div>
       </div>
     </div>
   )

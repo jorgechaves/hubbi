@@ -2,14 +2,13 @@
 
 import { useState, useEffect, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { createClient } from '@/lib/supabase/client'
 import { createUser } from '@/app/actions/admin'
-import { ArrowLeft } from 'lucide-react'
+import { AdminPageHeader } from '@/components/admin/page-header'
 import { toast } from 'sonner'
 
 type Group = { id: string; name: string }
@@ -40,15 +39,15 @@ export default function NewUserPage() {
   }
 
   return (
-    <div className="p-6 max-w-lg space-y-6">
-      <div className="flex items-center gap-3">
-        <Button variant="ghost" size="sm" asChild>
-          <Link href="/admin/users"><ArrowLeft className="h-4 w-4" /></Link>
-        </Button>
-        <h1 className="text-xl font-semibold">Novo usuário</h1>
-      </div>
+    <div className="min-h-full p-4 sm:p-6 lg:p-8">
+      <div className="mx-auto max-w-3xl space-y-6">
+        <AdminPageHeader
+          title="Novo usuário"
+          description="Crie uma conta e associe-a aos grupos de acesso."
+          backHref="/admin/users"
+        />
 
-      <form onSubmit={handleSubmit} className="bg-card rounded-lg border border-border p-6 space-y-4">
+      <form onSubmit={handleSubmit} className="max-w-xl space-y-5 rounded-xl border border-border bg-card p-5 shadow-sm sm:p-6">
         <div className="space-y-2">
           <Label htmlFor="name">Nome</Label>
           <Input id="name" name="name" required />
@@ -77,11 +76,11 @@ export default function NewUserPage() {
         <div className="space-y-2">
           <Label>Grupos</Label>
           {groups.length === 0 ? (
-            <p className="text-sm text-muted-foreground/60 px-3 py-2 border border-border rounded-md">
+            <p className="rounded-md border border-dashed border-border px-3 py-2 text-sm text-muted-foreground">
               Nenhum grupo cadastrado
             </p>
           ) : (
-            <div className="space-y-1 max-h-40 overflow-y-auto border border-border rounded-md p-3">
+            <div className="max-h-40 space-y-1 overflow-y-auto rounded-md border border-border bg-background p-3">
               {groups.map(g => (
                 <label key={g.id} className="flex items-center gap-2 text-sm cursor-pointer">
                   <input
@@ -102,10 +101,10 @@ export default function NewUserPage() {
         </div>
 
         {error && (
-          <p className="text-sm text-destructive bg-destructive/10 px-3 py-2 rounded-md">{error}</p>
+          <p className="rounded-lg border border-destructive/20 bg-destructive/10 px-3 py-2.5 text-sm text-destructive">{error}</p>
         )}
 
-        <div className="flex gap-2 pt-2">
+        <div className="flex flex-wrap justify-end gap-2 border-t border-border pt-4">
           <Button type="submit" disabled={isPending}>
             {isPending ? 'Criando...' : 'Criar usuário'}
           </Button>
@@ -114,6 +113,7 @@ export default function NewUserPage() {
           </Button>
         </div>
       </form>
+      </div>
     </div>
   )
 }
