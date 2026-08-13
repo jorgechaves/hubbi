@@ -1,9 +1,11 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
+import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { actionErrorMessage, getPasswordChangeInput, getRequiredString, sanitizeRedirectPath } from '@/lib/security/forms'
+import { resolveSiteUrl } from '@/lib/security/site-url'
 
 export async function login(formData: FormData) {
   const supabase = await createClient()
@@ -55,7 +57,13 @@ export async function forgotPassword(formData: FormData) {
   } catch (error) {
     return { error: actionErrorMessage(error) }
   }
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+  const requestHeaders = await headers()
+  const siteUrl = resolveSiteUrl({
+    configuredUrl: process.env.NEXT_PUBLIC_SITE_URL,
+    origin: requestHeaders.get('origin'),
+    forwardedHost: requestHeaders.get('x-forwarded-host') ?? requestHeaders.get('host'),
+    forwardedProto: requestHeaders.get('x-forwarded-proto'),
+  })
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${siteUrl}/reset-password`,
