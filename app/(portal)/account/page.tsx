@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { KeyRound } from 'lucide-react'
 import { toast } from 'sonner'
+import { AdminPageHeader } from '@/components/admin/page-header'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -32,36 +33,38 @@ export default function AccountPage() {
   }
 
   return (
-    <div className="p-8 max-w-lg space-y-6 animate-fade-up">
-      <div className="space-y-1">
-        <p className="text-[10px] font-mono-brand uppercase tracking-[0.2em] text-muted-foreground/50">Conta</p>
-        <h1 className="text-xl font-semibold text-foreground flex items-center gap-2">
-          <KeyRound className="h-5 w-5 text-muted-foreground" />
-          Minha conta
-        </h1>
-        <p className="text-sm text-muted-foreground">Altere sua senha de acesso.</p>
+    <div className="min-h-full bg-background p-4 sm:p-6 lg:p-8">
+      <div className="mx-auto max-w-2xl space-y-6">
+        <AdminPageHeader
+          eyebrow="Conta"
+          title="Minha conta"
+          description="Altere sua senha de acesso."
+          icon={KeyRound}
+        />
+
+        <form onSubmit={handleSubmit} className="max-w-xl space-y-5 rounded-xl border border-border bg-card p-5 shadow-sm sm:p-6">
+          <div className="space-y-2">
+            <Label htmlFor="current_password">Senha atual</Label>
+            <Input id="current_password" name="current_password" type="password" autoComplete="current-password" required />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="new_password">Nova senha</Label>
+            <Input id="new_password" name="new_password" type="password" minLength={8} autoComplete="new-password" required />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="password_confirmation">Confirmar nova senha</Label>
+            <Input id="password_confirmation" name="password_confirmation" type="password" minLength={8} autoComplete="new-password" required />
+          </div>
+
+          {error ? <p className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">{error}</p> : null}
+
+          <div className="flex justify-end border-t border-border pt-4">
+            <Button type="submit" disabled={isPending}>
+              {isPending ? 'Alterando...' : 'Alterar senha'}
+            </Button>
+          </div>
+        </form>
       </div>
-
-      <form onSubmit={handleSubmit} className="bg-card rounded-lg border border-border p-6 space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="current_password">Senha atual</Label>
-          <Input id="current_password" name="current_password" type="password" autoComplete="current-password" required />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="new_password">Nova senha</Label>
-          <Input id="new_password" name="new_password" type="password" minLength={8} autoComplete="new-password" required />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="password_confirmation">Confirmar nova senha</Label>
-          <Input id="password_confirmation" name="password_confirmation" type="password" minLength={8} autoComplete="new-password" required />
-        </div>
-
-        {error && <p className="text-sm text-destructive bg-destructive/10 px-3 py-2 rounded-md">{error}</p>}
-
-        <Button type="submit" disabled={isPending}>
-          {isPending ? 'Alterando...' : 'Alterar senha'}
-        </Button>
-      </form>
     </div>
   )
 }
