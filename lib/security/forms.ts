@@ -21,6 +21,17 @@ export function actionErrorMessage(error: unknown) {
   return 'Não foi possível concluir a operação. Tente novamente.'
 }
 
+export function passwordRecoveryErrorMessage(error: unknown) {
+  const details = typeof error === 'object' && error !== null ? error as Record<string, unknown> : null
+  const status = details?.status
+
+  if (status === 429) {
+    return 'Muitas solicitações de recuperação. Aguarde um minuto e tente novamente.'
+  }
+
+  return 'Não foi possível enviar o email de recuperação. Tente novamente mais tarde.'
+}
+
 export function sanitizeRedirectPath(value: FormDataEntryValue | string | null | undefined) {
   if (typeof value !== 'string') return '/dashboard'
 

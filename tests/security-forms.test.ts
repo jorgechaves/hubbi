@@ -9,10 +9,29 @@ import {
   getRequiredString,
   parseBoolean,
   parseHttpUrl,
+  passwordRecoveryErrorMessage,
   parseRole,
   parseUuidList,
   sanitizeRedirectPath,
 } from '../lib/security/forms.ts'
+
+test('password recovery errors never expose the empty SDK error', () => {
+  assert.equal(
+    passwordRecoveryErrorMessage({ message: '{}' }),
+    'Não foi possível enviar o email de recuperação. Tente novamente mais tarde.'
+  )
+  assert.equal(
+    passwordRecoveryErrorMessage({ message: 'Error sending recovery email', status: 500 }),
+    'Não foi possível enviar o email de recuperação. Tente novamente mais tarde.'
+  )
+})
+
+test('password recovery rate-limit errors explain when to retry', () => {
+  assert.equal(
+    passwordRecoveryErrorMessage({ message: 'For security purposes, you cannot request this after 60 seconds.', status: 429 }),
+    'Muitas solicitações de recuperação. Aguarde um minuto e tente novamente.'
+  )
+})
 
 test('sanitizeRedirectPath accepts only internal absolute paths', () => {
   assert.equal(sanitizeRedirectPath('/dashboard'), '/dashboard')

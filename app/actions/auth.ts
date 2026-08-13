@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { actionErrorMessage, getPasswordChangeInput, getRequiredString, sanitizeRedirectPath } from '@/lib/security/forms'
+import { actionErrorMessage, getPasswordChangeInput, getRequiredString, passwordRecoveryErrorMessage, sanitizeRedirectPath } from '@/lib/security/forms'
 import { resolveSiteUrl } from '@/lib/security/site-url'
 
 export async function login(formData: FormData) {
@@ -71,7 +71,7 @@ export async function forgotPassword(formData: FormData) {
 
   if (error) {
     console.error('[forgotPassword]', error.message)
-    return { error: error.message }
+    return { error: passwordRecoveryErrorMessage(error) }
   }
 
   return { success: true }
