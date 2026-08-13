@@ -93,7 +93,7 @@ test('keeps admin parent navigation active on nested pages', () => {
 
 - [ ] **Step 2: Run the tests and verify the expected failure**
 
-Run: `node --test tests/navigation.test.ts`
+Run: `node --experimental-strip-types --test tests/navigation.test.ts`
 
 Expected: FAIL because `lib/ui/navigation.ts` does not exist yet.
 
@@ -133,7 +133,7 @@ export function isNavigationEntryActive(pathname: string, href: string): boolean
 
 - [ ] **Step 4: Run the tests and verify they pass**
 
-Run: `node --test tests/navigation.test.ts`
+Run: `node --experimental-strip-types --test tests/navigation.test.ts`
 
 Expected: PASS for both navigation tests.
 
@@ -343,7 +343,7 @@ Use the page header and form card for portal name, logo URL and primary color. K
 
 - [ ] **Step 4: Run existing tests and lint**
 
-Run: `node --test tests/*.test.ts`
+Run: `node --experimental-strip-types --test tests/*.test.ts`
 
 Expected: all existing security/list/account tests pass.
 
