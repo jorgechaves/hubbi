@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { createClient } from '@/lib/supabase/client'
+import { passwordRecoveryClientOptions } from '@/lib/security/password-recovery'
 import { resetPassword } from '@/app/actions/auth'
 import { Loader2 } from 'lucide-react'
 
@@ -20,7 +21,7 @@ export function ResetPasswordClient({ code }: { code?: string }) {
   useEffect(() => {
     if (!code) return
 
-    const supabase = createClient()
+    const supabase = createClient(passwordRecoveryClientOptions())
     supabase.auth.exchangeCodeForSession(code).then(({ error }) => {
       if (error) {
         setStatus('error')
