@@ -1,16 +1,19 @@
 'use client'
 
-import { useState, useEffect, useTransition } from 'react'
+import { useState, useEffect, useRef, useTransition } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { createClient } from '@/lib/supabase/client'
 import { passwordRecoveryClientOptions } from '@/lib/security/password-recovery'
-import { resetPassword } from '@/app/actions/auth'
+import { passwordResetErrorMessage } from '@/lib/security/forms'
 import { Loader2 } from 'lucide-react'
 
 export function ResetPasswordClient({ code }: { code?: string }) {
+  const router = useRouter()
+  const supabaseRef = useRef<ReturnType<typeof createClient> | null>(null)
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>(code ? 'loading' : 'error')
   const [exchangeError, setExchangeError] = useState<string | null>(
     code ? null : 'Link inválido ou expirado.'
@@ -22,14 +25,28 @@ export function ResetPasswordClient({ code }: { code?: string }) {
     if (!code) return
 
     const supabase = createClient(passwordRecoveryClientOptions())
+    supabaseRef.current = supabase
+    let active = true
+
     supabase.auth.exchangeCodeForSession(code).then(({ error }) => {
+      if (!active) return
+
       if (error) {
         setStatus('error')
         setExchangeError('Link expirado ou já utilizado. Solicite um novo link.')
       } else {
         setStatus('ready')
       }
+    }).catch(() => {
+      if (!active) return
+      setStatus('error')
+      setExchangeError('Não foi possível validar o link. Solicite um novo link.')
     })
+
+    return () => {
+      active = false
+      if (supabaseRef.current === supabase) supabaseRef.current = null
+    }
   }, [code])
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -43,8 +60,20 @@ export function ResetPasswordClient({ code }: { code?: string }) {
 
     setFormError(null)
     startTransition(async () => {
-      const result = await resetPassword(formData)
-      if (result?.error) setFormError(result.error)
+      const supabase = supabaseRef.current
+      if (!supabase) {
+        setFormError('Link expirado ou já utilizado. Solicite um novo link.')
+        return
+      }
+
+      const { error } = await supabase.auth.updateUser({ password })
+      if (error) {
+        setFormError(passwordResetErrorMessage(error))
+        return
+      }
+
+      await supabase.auth.signOut({ scope: 'local' })
+      router.replace('/login?reset=success')
     })
   }
 

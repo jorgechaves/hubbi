@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { actionErrorMessage, getPasswordChangeInput, getRequiredString, passwordRecoveryErrorMessage, sanitizeRedirectPath } from '@/lib/security/forms'
+import { actionErrorMessage, getPasswordChangeInput, getRequiredString, passwordRecoveryErrorMessage, passwordResetErrorMessage, sanitizeRedirectPath } from '@/lib/security/forms'
 import { resolveSiteUrl } from '@/lib/security/site-url'
 
 export async function login(formData: FormData) {
@@ -93,7 +93,12 @@ export async function resetPassword(formData: FormData) {
   const { error } = await supabase.auth.updateUser({ password })
 
   if (error) {
-    return { error: 'Não foi possível redefinir a senha. O link pode ter expirado.' }
+    console.error('[resetPassword]', {
+      name: error.name,
+      status: error.status,
+      code: error.code,
+    })
+    return { error: passwordResetErrorMessage(error) }
   }
 
   redirect('/login?reset=success')

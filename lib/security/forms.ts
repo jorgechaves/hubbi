@@ -32,6 +32,36 @@ export function passwordRecoveryErrorMessage(error: unknown) {
   return 'Não foi possível enviar o email de recuperação. Tente novamente mais tarde.'
 }
 
+export function passwordResetErrorMessage(error: unknown) {
+  const details = typeof error === 'object' && error !== null ? error as Record<string, unknown> : null
+  const code = typeof details?.code === 'string' ? details.code : null
+  const name = typeof details?.name === 'string' ? details.name : null
+  const status = details?.status
+
+  if (
+    code === 'session_not_found' ||
+    code === 'session_expired' ||
+    name === 'AuthSessionMissingError' ||
+    name === 'AuthInvalidJwtError'
+  ) {
+    return 'Link expirado ou já utilizado. Solicite um novo link.'
+  }
+
+  if (code === 'same_password') {
+    return 'A nova senha deve ser diferente da senha atual.'
+  }
+
+  if (code === 'weak_password' || name === 'AuthWeakPasswordError') {
+    return 'A nova senha não atende aos requisitos de segurança.'
+  }
+
+  if (code === 'over_request_rate_limit' || status === 429) {
+    return 'Muitas tentativas. Aguarde um minuto e tente novamente.'
+  }
+
+  return 'Não foi possível redefinir a senha. Tente novamente.'
+}
+
 export function sanitizeRedirectPath(value: FormDataEntryValue | string | null | undefined) {
   if (typeof value !== 'string') return '/dashboard'
 

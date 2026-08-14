@@ -13,6 +13,7 @@ import {
   parseRole,
   parseUuidList,
   sanitizeRedirectPath,
+  passwordResetErrorMessage,
 } from '../lib/security/forms.ts'
 
 test('password recovery errors never expose the empty SDK error', () => {
@@ -30,6 +31,29 @@ test('password recovery rate-limit errors explain when to retry', () => {
   assert.equal(
     passwordRecoveryErrorMessage({ message: 'For security purposes, you cannot request this after 60 seconds.', status: 429 }),
     'Muitas solicitações de recuperação. Aguarde um minuto e tente novamente.'
+  )
+})
+
+test('password reset errors explain session, policy, and duplicate-password failures', () => {
+  assert.equal(
+    passwordResetErrorMessage({ name: 'AuthSessionMissingError', message: 'Auth session missing!' }),
+    'Link expirado ou já utilizado. Solicite um novo link.'
+  )
+  assert.equal(
+    passwordResetErrorMessage({ code: 'session_not_found' }),
+    'Link expirado ou já utilizado. Solicite um novo link.'
+  )
+  assert.equal(
+    passwordResetErrorMessage({ code: 'same_password' }),
+    'A nova senha deve ser diferente da senha atual.'
+  )
+  assert.equal(
+    passwordResetErrorMessage({ code: 'weak_password' }),
+    'A nova senha não atende aos requisitos de segurança.'
+  )
+  assert.equal(
+    passwordResetErrorMessage({ code: 'unexpected_failure', status: 500 }),
+    'Não foi possível redefinir a senha. Tente novamente.'
   )
 })
 
